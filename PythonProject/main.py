@@ -11,6 +11,7 @@ import serial
 import time
 import funkcje
 
+port='COM3'
 
 serwo_LP="glowa_LP"
 serwo_GD="glowa_GD"
@@ -36,25 +37,25 @@ g_wspolczynnik_gd=1
 odliczanie=0
 
 
-arduino=serial.Serial('COM3', 9600)
+arduino=serial.Serial(port, 9600) #stworzenie i kofiguracja obiektu z ktorym bedziemy sie komunikowac
 time.sleep(2) #zeby sie polaczenie ustabilizowalo
-face_cascade= cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-nagranie=cv2.VideoCapture(0) #
-if not nagranie.isOpened():
+face_cascade= cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') #inincjalizacja narzedzia do rozpoznawania twarzy
+nagranie=cv2.VideoCapture(0) #włączenie kamery, 0 oznacza ze wlaczymy domyslna kamere, nagranie z kamery zostanie zapisane w obiekcie o nazwie nagranie
+if not nagranie.isOpened(): #sprawdzamy czy rozpoczelo sie nagranie
     print("nie udalo sie otworzyc kamery")
-    exit()
-sz_kamery=int(nagranie.get(cv2.CAP_PROP_FRAME_WIDTH))
-w_kamery=int(nagranie.get(cv2.CAP_PROP_FRAME_HEIGHT))
-funkcje.centrowanie(arduino, serwo_LP, serwo_kat_LP, serwo_GD, serwo_kat_GD, serwo_oko_lp, serwo_oko_gd, serwo_kat_oko_lp, serwo_kat_oko_gd)
+    exit() #wylaczenie calkowite programu
+sz_kamery=int(nagranie.get(cv2.CAP_PROP_FRAME_WIDTH))#sczytanie z obiektu nagranie jego szerokosci i zapisanie do zmiennej sz_kamery
+w_kamery=int(nagranie.get(cv2.CAP_PROP_FRAME_HEIGHT))#analogia
+funkcje.centrowanie(arduino, serwo_LP, serwo_kat_LP, serwo_GD, serwo_kat_GD, serwo_oko_lp, serwo_oko_gd, serwo_kat_oko_lp, serwo_kat_oko_gd)#ustawienie wszystkich serwo w pozycji bazowej
 
 while True:
-    sprawdzenie, klatka=nagranie.read()
-    if not sprawdzenie:
+    sprawdzenie, klatka=nagranie.read()#w zmiennej sprawdzenie zostanie przypisany T lub F w zaleznosci od tego czy udalo sie pobrac klatke z nagrania, w zmiennej klatka zapisywana jest pojedyncza klatka z nagrania
+    if not sprawdzenie: #jesli nie uda sie nam sczytac klatki z nagrania to wychodzimy z glownej petli programy tym samym konczac go
         break
-    szara_klatka = cv2.cvtColor(klatka, cv2.COLOR_BGR2GRAY)
-    twarz =face_cascade.detectMultiScale(szara_klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    klatka = cv2.cvtColor(klatka, cv2.COLOR_BGR2GRAY)#zmieniamy kolory klatki na odcienie szarososci poniewaz nasz klasyfikator do wykrywania twarzy lepiej pracuje z takimi kolorami
+    twarz =face_cascade.detectMultiScale(klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))#wykrycie twarzy i przypisanie informacji o niej do obietku twarz
 
-    for (x,y,sz_twarzy,wys_twarzy) in twarz:
+    for (x,y,sz_twarzy,wys_twarzy) in twarz: #bierzemy kolejne dane zapisane w obiekcie twarz
         cv2.rectangle(klatka, (x, y), (x+sz_twarzy, y+wys_twarzy), (100,100,100), 3)
 
         srodek_x=funkcje.srodek(x, sz_twarzy)

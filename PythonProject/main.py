@@ -1,9 +1,9 @@
-#1 zalaczenie kamerki standardzik
+#1 zalaczenie kamerki
 #2 centrowanie osoba w obiektywie start rozpoznawania
 #3 zcheckowanie polozenia osoby w danym obszarze (prostokacie)
-#4 marianruchacz jezdzi oczami do okreslonego czasu jesli obiekt jest nieruchomy to centruje oczy dojezdza glowa
-#5 jesli osoba wychodzi poza obszar widocznosci ruchacza to marian jedzie glowa niezaleznie od czasu
-#6 obliczenia w pythonie bo oskar ma autyzm, mruganie co ~3 sekundy, jesli  marian zobaczy dobra dupcie do gwizdze
+#4 marian jezdzi oczami do okreslonego czasu jesli obiekt jest nieruchomy to centruje oczy, dojezdza glowa
+#5 jesli osoba wychodzi poza obszar widocznosci to marian jedzie glowa niezaleznie od czasu
+#6 obliczenia w pythonie
 
 
 import cv2
@@ -39,7 +39,7 @@ odliczanie=0
 arduino=serial.Serial('COM3', 9600)
 time.sleep(2) #zeby sie polaczenie ustabilizowalo
 face_cascade= cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-nagranie=cv2.VideoCapture(0)
+nagranie=cv2.VideoCapture(0) #
 if not nagranie.isOpened():
     print("nie udalo sie otworzyc kamery")
     exit()

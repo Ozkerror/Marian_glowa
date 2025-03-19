@@ -54,69 +54,76 @@ while True:
         break
     klatka = cv2.cvtColor(klatka, cv2.COLOR_BGR2GRAY)#zmieniamy kolory klatki na odcienie szarososci poniewaz nasz klasyfikator do wykrywania twarzy lepiej pracuje z takimi kolorami
     twarz =face_cascade.detectMultiScale(klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))#wykrycie twarzy i przypisanie informacji o niej do obietku twarz
-
-    for (x,y,sz_twarzy,wys_twarzy) in twarz: #bierzemy kolejne dane zapisane w obiekcie twarz
-        cv2.rectangle(klatka, (x, y), (x+sz_twarzy, y+wys_twarzy), (100,100,100), 3)
-
-        srodek_x=funkcje.srodek(x, sz_twarzy)
-        srodek_y=funkcje.srodek(y, wys_twarzy)
-        prop_X=funkcje.pozycja_x(x, sz_kamery, sz_twarzy)
-        prop_Y=funkcje.pozycja_y(y, w_kamery, wys_twarzy)
-        funkcje.ruch_oczu(o_wspolczynnik_lp, o_wspolczynnik_gd, prop_X, prop_Y, arduino, serwo_oko_gd, serwo_oko_lp)
-        SS=funkcje.sprawdz_ss(prop_X, prop_Y)
-        SG=funkcje.sprawdz_sg(prop_X, prop_Y)
-        SD=funkcje.sprawdz_sd(prop_X, prop_Y)
-        LS=funkcje.sprawdz_ls(prop_X, prop_Y)
-        LG=funkcje.sprawdz_lg(prop_X, prop_Y)
-        LD=funkcje.sprawdz_ld(prop_X, prop_Y)
-        PS=funkcje.sprawdz_ps(prop_X, prop_Y)
-        PG=funkcje.sprawdz_pg(prop_X, prop_Y)
-        PD=funkcje.sprawdz_pd(prop_X, prop_Y)
-        cokolwiek=funkcje.sprawdz_cokolwiek(SS,SG,SD,LS,LG,LD,PS,PG,PD)
-        skrajne_l=funkcje.skrajne_l(x, sz_kamery, 0.05)
-        skrajne_p=funkcje.skrajne_p(x, sz_twarzy, sz_kamery, 0.95)
-        skrajne_g=funkcje.skrajne_g(y, w_kamery, 0.05)
-        skrajne_d=funkcje.skrajne_d(y, wys_twarzy, w_kamery, 0.95)
-
-
-
-        if not cokolwiek:
-            sektor=0
-        if SS:
-            sektor=1
-        if SG:
-            sektor=2
-        if SD:
-            sektor=3
-        if LS:
-            sektor=4
-        if LG:
-            sektor=5
-        if LD:
-            sektor=6
-        if PS:
-            sektor=7
-        if PG:
-            sektor=8
-        if PD:
-            sektor=9
+    xk=twarz[0] #wyciagniecie z obiektu twarz krotki ktora zawiera wspolrzedne x wykrytych twarzy
+    x=xk[0] #wyciagniecie wspolrzednej x pierwszej twarzy
+    yk=twarz[1] #analogia do tego co powyzej
+    y=yk[0] #analogia do tego co powyzej
+    sz_twarzyk=twarz[2] #analogia do tego co powyzej, tym ze tym razem bierzemy szerokosc twarzy
+    sz_twarzy=sz_twarzyk[0] #analogia do tego co powyzej
+    wys_twarzyk=twarz[3]#analogia do tego co powyzej
+    wys_twarzy=wys_twarzyk[0]#analogia do tego co powyzej
+    sz_twarzy=sz_twarzy+x #wyznaczanie wspolrzednej x prawej strony twarzy
+    wys_twarzy=wys_twarzy+y #wyznaczanie wspolrzednej dolnej albo gornej(nie pamietam jaki jest uklad wspolrzednych)wspolrzednej y twarzy
+    cv2.rectangle(klatka, (x, y), (sz_twarzy, wys_twarzy), (100,100,100), 3) #tworzenie prostokata dookola twarzy (te liczby to kolorki i szerokosc obramowaniaa)
+    srodek_x=funkcje.srodek(x, sz_twarzy)
+    srodek_y=funkcje.srodek(y, wys_twarzy)
+    prop_X=funkcje.pozycja_x(x, sz_kamery, sz_twarzy)
+    prop_Y=funkcje.pozycja_y(y, w_kamery, wys_twarzy)
+    funkcje.ruch_oczu(o_wspolczynnik_lp, o_wspolczynnik_gd, prop_X, prop_Y, arduino, serwo_oko_gd, serwo_oko_lp)
+    SS=funkcje.sprawdz_ss(prop_X, prop_Y)
+    SG=funkcje.sprawdz_sg(prop_X, prop_Y)
+    SD=funkcje.sprawdz_sd(prop_X, prop_Y)
+    LS=funkcje.sprawdz_ls(prop_X, prop_Y)
+    LG=funkcje.sprawdz_lg(prop_X, prop_Y)
+    LD=funkcje.sprawdz_ld(prop_X, prop_Y)
+    PS=funkcje.sprawdz_ps(prop_X, prop_Y)
+    PG=funkcje.sprawdz_pg(prop_X, prop_Y)
+    PD=funkcje.sprawdz_pd(prop_X, prop_Y)
+    cokolwiek=funkcje.sprawdz_cokolwiek(SS,SG,SD,LS,LG,LD,PS,PG,PD)
+    skrajne_l=funkcje.skrajne_l(x, sz_kamery, 0.05)
+    skrajne_p=funkcje.skrajne_p(x, sz_twarzy, sz_kamery, 0.95)
+    skrajne_g=funkcje.skrajne_g(y, w_kamery, 0.05)
+    skrajne_d=funkcje.skrajne_d(y, wys_twarzy, w_kamery, 0.95)
 
 
-        if skrajne_l or skrajne_g or skrajne_d or skrajne_p or(odliczanie>=czas_glowa):
-            funkcje.ruch_glowy(arduino, g_wspolczynnik_lp, g_wspolczynnik_gd, sz_kamery, w_kamery, srodek_x, srodek_y, serwo_LP, serwo_GD)
-            odliczanie=0
+
+    if not cokolwiek:
+        sektor=0
+    if SS:
+        sektor=1
+    if SG:
+        sektor=2
+    if SD:
+        sektor=3
+    if LS:
+        sektor=4
+    if LG:
+        sektor=5
+    if LD:
+        sektor=6
+    if PS:
+        sektor=7
+    if PG:
+        sektor=8
+    if PD:
+        sektor=9
 
 
-        if sektor!=0 and sektor!=poprzedni:
-            odliczanie=time.time()
+    if skrajne_l or skrajne_g or skrajne_d or skrajne_p or(odliczanie>=czas_glowa):
+        funkcje.ruch_glowy(arduino, g_wspolczynnik_lp, g_wspolczynnik_gd, sz_kamery, w_kamery, srodek_x, srodek_y, serwo_LP, serwo_GD)
+        odliczanie=0
 
 
-        if sektor==1:
-            odliczanie=0
+    if sektor!=0 and sektor!=poprzedni:
+        odliczanie=time.time()
 
-        poprzedni=sektor
 
-    cv2.imshow("nagrywanie", klatka)
+    if sektor==1:
+        odliczanie=0
+
+    poprzedni=sektor
+
+    cv2.imshow("nagrywanie", klatka) #wyswietla okienko z obrazem z kamerki
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

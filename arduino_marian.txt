@@ -19,7 +19,6 @@ int poprzedni_LP;
 int poprzedni_GD;
 
 int max=0
-...
 
 
 

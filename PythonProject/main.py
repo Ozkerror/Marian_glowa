@@ -10,111 +10,112 @@ import cv2
 import serial
 import time
 import funkcje
+from funkcje import ruch_oczu, ruch_glowy, komunikacja_arduino
 
+port='COM3' #tutaj nalezy wpisac port do ktorego podlaczone jest arduino
+oczy_kat_lp=0
+oczy_kat_gd=0
+glowa_kat_lp=0
+glowa_kat_gd=0
 
-serwo_LP="glowa_LP"
-serwo_GD="glowa_GD"
+sektor = 0
+start = 0
+poprzedni = 0
 
-serwo_oko_lp="oko_LP"
-serwo_oko_gd="oko_GD"
+czas_glowa = 3
 
-serwo_kat_LP=0
-serwo_kat_GD=0
-serwo_kat_oko_lp=0
-serwo_kat_oko_gd=0
+o_wspolczynnik_lp = 1
+o_wspolczynnik_gd = 1
+g_wspolczynnik_lp = 1
+g_wspolczynnik_gd = 1
+odliczanie = 0
 
-sektor=0
-start=0
-poprzedni=0
+wiadomosc_potwierdzajaca="potwierdzenie"
 
-czas_glowa=3
+arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunikowac
+time.sleep(2)  # zeby sie polaczenie ustabilizowalo
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+nagranie = cv2.VideoCapture(0)
 
-o_wspolczynnik_lp=1
-o_wspolczynnik_gd=1
-g_wspolczynnik_lp=1
-g_wspolczynnik_gd=1
-odliczanie=0
-
-
-arduino=serial.Serial('COM3', 9600)
-time.sleep(2) #zeby sie polaczenie ustabilizowalo
-face_cascade= cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-nagranie=cv2.VideoCapture(0) #
 if not nagranie.isOpened():
     print("nie udalo sie otworzyc kamery")
     exit()
-sz_kamery=int(nagranie.get(cv2.CAP_PROP_FRAME_WIDTH))
-w_kamery=int(nagranie.get(cv2.CAP_PROP_FRAME_HEIGHT))
-funkcje.centrowanie(arduino, serwo_LP, serwo_kat_LP, serwo_GD, serwo_kat_GD, serwo_oko_lp, serwo_oko_gd, serwo_kat_oko_lp, serwo_kat_oko_gd)
+
+sz_kamery = int(nagranie.get(cv2.CAP_PROP_FRAME_WIDTH))
+w_kamery = int(nagranie.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+funkcje.centrowanie(arduino, glowa_kat_lp,glowa_kat_gd,oczy_kat_lp,oczy_kat_gd,wiadomosc_potwierdzajaca)
 
 while True:
-    sprawdzenie, klatka=nagranie.read()
+    sprawdzenie, klatka = nagranie.read()
     if not sprawdzenie:
         break
+
     szara_klatka = cv2.cvtColor(klatka, cv2.COLOR_BGR2GRAY)
-    twarz =face_cascade.detectMultiScale(szara_klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    twarz = face_cascade.detectMultiScale(szara_klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    krotka_x=twarz[0]#wyciagam z obiektu twarz krotke ktora przechowuje wspolrzedne x twarzy w kamerze
+    krotka_y=twarz[1]
+    krotka_sz_twarzy=twarz[2]
+    krotka_wys_twarzy=twarz[3]
+    x=krotka_x[0]#wycaigam z krotki wspolrzedna x pierwszej wykrytej twarzy
+    y=krotka_y[0]
+    sz_twarzy=krotka_sz_twarzy[0]
+    wys_twarzy=krotka_wys_twarzy[0]
+    cv2.rectangle(klatka, (x, y), (x + sz_twarzy, y + wys_twarzy), (100, 100, 100), 3)
 
-    for (x,y,sz_twarzy,wys_twarzy) in twarz:
-        cv2.rectangle(klatka, (x, y), (x+sz_twarzy, y+wys_twarzy), (100,100,100), 3)
-
-        srodek_x=funkcje.srodek(x, sz_twarzy)
-        srodek_y=funkcje.srodek(y, wys_twarzy)
-        prop_X=funkcje.pozycja_x(x, sz_kamery, sz_twarzy)
-        prop_Y=funkcje.pozycja_y(y, w_kamery, wys_twarzy)
-        funkcje.ruch_oczu(o_wspolczynnik_lp, o_wspolczynnik_gd, prop_X, prop_Y, arduino, serwo_oko_gd, serwo_oko_lp)
-        SS=funkcje.sprawdz_ss(prop_X, prop_Y)
-        SG=funkcje.sprawdz_sg(prop_X, prop_Y)
-        SD=funkcje.sprawdz_sd(prop_X, prop_Y)
-        LS=funkcje.sprawdz_ls(prop_X, prop_Y)
-        LG=funkcje.sprawdz_lg(prop_X, prop_Y)
-        LD=funkcje.sprawdz_ld(prop_X, prop_Y)
-        PS=funkcje.sprawdz_ps(prop_X, prop_Y)
-        PG=funkcje.sprawdz_pg(prop_X, prop_Y)
-        PD=funkcje.sprawdz_pd(prop_X, prop_Y)
-        cokolwiek=funkcje.sprawdz_cokolwiek(SS,SG,SD,LS,LG,LD,PS,PG,PD)
-        skrajne_l=funkcje.skrajne_l(x, sz_kamery, 0.05)
-        skrajne_p=funkcje.skrajne_p(x, sz_twarzy, sz_kamery, 0.95)
-        skrajne_g=funkcje.skrajne_g(y, w_kamery, 0.05)
-        skrajne_d=funkcje.skrajne_d(y, wys_twarzy, w_kamery, 0.95)
+    srodek_x = funkcje.srodek(x, sz_twarzy)
+    srodek_y = funkcje.srodek(y, wys_twarzy)
+    prop_x = funkcje.pozycja_x(x, sz_kamery, sz_twarzy)
+    prop_y = funkcje.pozycja_y(y, w_kamery, wys_twarzy)
 
 
+    ss = funkcje.sprawdz_ss(prop_x, prop_y)
+    sg = funkcje.sprawdz_sg(prop_x, prop_y)
+    sd = funkcje.sprawdz_sd(prop_x, prop_y)
+    ls = funkcje.sprawdz_ls(prop_x, prop_y)
+    lg = funkcje.sprawdz_lg(prop_x, prop_y)
+    ld = funkcje.sprawdz_ld(prop_x, prop_y)
+    ps = funkcje.sprawdz_ps(prop_x, prop_y)
+    pg = funkcje.sprawdz_pg(prop_x, prop_y)
+    pd = funkcje.sprawdz_pd(prop_x, prop_y)
+    cokolwiek = funkcje.sprawdz_cokolwiek(ss, sg, sd, ls, lg, ld, ps, pg, pd)
 
-        if not cokolwiek:
-            sektor=0
-        if SS:
-            sektor=1
-        if SG:
-            sektor=2
-        if SD:
-            sektor=3
-        if LS:
-            sektor=4
-        if LG:
-            sektor=5
-        if LD:
-            sektor=6
-        if PS:
-            sektor=7
-        if PG:
-            sektor=8
-        if PD:
-            sektor=9
+    skrajne_l = funkcje.skrajne_l(x, sz_kamery, 0.05)
+    skrajne_p = funkcje.skrajne_p(x, sz_twarzy, sz_kamery, 0.95)
+    skrajne_g = funkcje.skrajne_g(y, w_kamery, 0.05)
+    skrajne_d = funkcje.skrajne_d(y, wys_twarzy, w_kamery, 0.95)
 
+    if not cokolwiek:
+        sektor = 0
+    elif ss:
+        sektor = 1
+    elif sg:
+        sektor = 2
+    elif sd:
+        sektor = 3
+    elif ls:
+        sektor = 4
+    elif lg:
+        sektor = 5
+    elif ld:
+        sektor = 6
+    elif ps:
+        sektor = 7
+    elif pg:
+        sektor = 8
+    elif pd:
+        sektor = 9
+    if sektor != 0 and sektor != poprzedni:
+        odliczanie = time.time()
 
-        if skrajne_l or skrajne_g or skrajne_d or skrajne_p or(odliczanie>=czas_glowa):
-            funkcje.ruch_glowy(arduino, g_wspolczynnik_lp, g_wspolczynnik_gd, sz_kamery, w_kamery, srodek_x, srodek_y, serwo_LP, serwo_GD)
-            odliczanie=0
+    if skrajne_l or skrajne_g or skrajne_d or skrajne_p or (odliczanie >= czas_glowa):
+        glowa_kat_lp, glowa_kat_gd =ruch_glowy(g_wspolczynnik_lp,g_wspolczynnik_gd, sz_kamery,w_kamery,x,y)
+        odliczanie = 0
 
+    oczy_kat_lp, oczy_kat_gd=ruch_oczu(o_wspolczynnik_lp, o_wspolczynnik_gd, prop_x,prop_y)
+    komunikacja_arduino(arduino, glowa_kat_lp, glowa_kat_gd, oczy_kat_lp, oczy_kat_gd, wiadomosc_potwierdzajaca)
 
-        if sektor!=0 and sektor!=poprzedni:
-            odliczanie=time.time()
-
-
-        if sektor==1:
-            odliczanie=0
-
-        poprzedni=sektor
-
+    poprzedni=sektor
     cv2.imshow("nagrywanie", klatka)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
@@ -123,16 +124,7 @@ nagranie.release()
 cv2.destroyAllWindows()
 arduino.close()
 
-
-
-
-
-
-
-
-
-
-        #if odliczanie>=czas_glowa:
+#if odliczanie>=czas_glowa:
             #odliczanie=0
             #rusza glowa
             #srodkowanie oczu

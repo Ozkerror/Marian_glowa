@@ -93,7 +93,7 @@ while True:                                     # Odczytywanie klatek nagrania, 
     skrajne_g = funkcje.skrajne_g(y, w_kamery, 0.05)
     skrajne_d = funkcje.skrajne_d(y, wys_twarzy, w_kamery, 0.95)
 
-    if not cokolwiek:
+    if not twarz: #ten zostanie spelniony jesli twarz bedzie pustą listą, czyli jesli zadna twarz nie zostanie wykryta
         sektor = 0
     elif ss:
         sektor = 1

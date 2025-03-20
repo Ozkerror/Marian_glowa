@@ -1,7 +1,7 @@
 
-
-def srodek(x, sz_twarzy):
-    wspolrzedna = x + sz_twarzy / 2
+#wyznaczanie wspolrzednej srodka twarzy,
+def srodek(x, wymiar_twarzy):
+    wspolrzedna = x + wymiar_twarzy / 2
     return wspolrzedna
 
 def potwierdzenie(arduino, oczekiwana_wiadomosc):
@@ -50,10 +50,7 @@ def sprawdz_pg(prop_x, prop_y):
 
 def sprawdz_pd(prop_x, prop_y):
     return prop_x > 0.8 and prop_y < 0.2
-
-def sprawdz_cokolwiek(m, n, o, p, r, s, t, u, w):
-    return o or p or r or s or t or u or w or m or n
-
+#troche niepotrzebna funkcja, ale polega ona na wpisaniu konkretnych polozen serw na sztywno
 def centrowanie(arduino, kat_ser_lp, kat_ser_gd, kat_ser_oko_lp, kat_ser_oko_gd, wiadomosc_potwierdzajaca):
     komunikacja_arduino(arduino, kat_ser_lp, kat_ser_gd, kat_ser_oko_lp, kat_ser_oko_gd, wiadomosc_potwierdzajaca)
 

@@ -58,28 +58,21 @@ def sprawdz_cokolwiek(m, n, o, p, r, s, t, u, w):
 def centrowanie(arduino, ser_lp, kat_ser_lp, ser_gd, kat_ser_gd, ser_oko_lp, ser_oko_gd, kat_ser_oko_lp, kat_ser_oko_gd):
     arduino.write(f"{ser_lp}\n".encode())
     potwierdzenie(arduino, "serwo_g_lp")
-    time.sleep(0.2)
     arduino.write(f"{kat_ser_lp}\n".encode())
     potwierdzenie(arduino, "kont_g_lp")
-    time.sleep(1)
 
     arduino.write(f"{ser_gd}\n".encode())
     potwierdzenie(arduino, "serwo_g_gd1")
-    time.sleep(0.2)
     arduino.write(f"{kat_ser_gd}\n".encode())
     potwierdzenie(arduino, "kont_g_gd1")
-    time.sleep(0.2)
 
     arduino.write(f"{ser_oko_lp}\n".encode())
     potwierdzenie(arduino, "serwo_o_lp")
-    time.sleep(0.2)
     arduino.write(f"{kat_ser_oko_lp}\n".encode())
     potwierdzenie(arduino, "kont_o_lp")
-    time.sleep(0.2)
 
     arduino.write(f"{ser_oko_gd}\n".encode())
     potwierdzenie(arduino, "serwo_o_gd")
-    time.sleep(0.2)
     arduino.write(f"{kat_ser_oko_gd}\n".encode())
     potwierdzenie(arduino, "kont_o_gd")
 
@@ -90,12 +83,10 @@ def ruch_oczu(wspolczynnik_lp, wspolczynnik_gd, prop_x, prop_y, arduino, oczy_gd
     potwierdzenie(arduino, "serwo_o_lp")
     arduino.write(f"{kat_lp}\n".encode())
     potwierdzenie(arduino, "kont_o_lp")
-    time.sleep(0.2)
     arduino.write(f"{oczy_gd}\n".encode())
     potwierdzenie(arduino, "serwo_o_gd")
     arduino.write(f"{kat_gd}\n".encode())
     potwierdzenie(arduino, "kont_o_gd")
-    time.sleep(0.2)
 
 def ruch_glowy(arduino, wspolczynnik_lp, wspolczynnik_gd, l_kamery, w_kamery, x_twarzy, y_twarzy, serwo_lp, serwo_gd):
     odleglosc_x = x_twarzy - l_kamery / 2

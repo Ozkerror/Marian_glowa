@@ -24,6 +24,8 @@ def pozycja_y(y, w_kamery, w_glowy):
     proporcja_y = srodek_glowy_y / w_kamery
     return proporcja_y
 
+    #sprawdzanie czy twarz znajduje sie w konkretnych polach siatki
+
 def sprawdz_ss(prop_x, prop_y):
     return 0.2 < prop_x < 0.8 and 0.2 < prop_y < 0.8
 

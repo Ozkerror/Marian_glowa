@@ -1,6 +1,5 @@
 import cv2
 import serial
-import time
 
 
 def srodek(x, sz_twarzy):

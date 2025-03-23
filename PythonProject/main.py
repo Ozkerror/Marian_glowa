@@ -85,7 +85,6 @@ while True:                                     # Odczytywanie klatek nagrania, 
     ps = funkcje.sprawdz_ps(prop_x, prop_y)
     pg = funkcje.sprawdz_pg(prop_x, prop_y)
     pd = funkcje.sprawdz_pd(prop_x, prop_y)
-    cokolwiek = funkcje.sprawdz_cokolwiek(ss, sg, sd, ls, lg, ld, ps, pg, pd)
 
 
     skrajne_l = funkcje.skrajne_l(x, sz_kamery, 0.05)

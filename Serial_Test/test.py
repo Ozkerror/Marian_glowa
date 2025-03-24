@@ -21,6 +21,7 @@ while True:
     time.sleep(0.2)
     arduino.write(string_tablica2.encode())
     potwierdzenie(arduino, wiadomosc_potwierdzajaca)
+    time.sleep(0.2)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 arduino.close()

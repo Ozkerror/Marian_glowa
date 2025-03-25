@@ -1,14 +1,14 @@
 import serial
 import time
 
-port="COM3"
+port="COM9"
 tablica1=[20, 50, 80, 100, 150]
 tablica2=[120, 100, 80, 50, 30]
 wiadomosc_potwierdzajaca="OK"
 def potwierdzenie(rduino, oczekiwana_wiadomosc):
     wiadomosc=""
     while True:
-        if rduino.in_waiting() > 0:
+        if rduino.in_waiting > 0:
             wiadomosc = rduino.readline().decode().strip()
         if wiadomosc == oczekiwana_wiadomosc:
             break

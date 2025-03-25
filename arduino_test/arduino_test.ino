@@ -1,18 +1,30 @@
-char tablica[100];
-int tablica_int[10];
-uint8_t idx=0;
+#include <Servo.h>
 
+char tablica[100];
+int tablica_int[5];
+bool wiadomoscPrzetworzona=false;
+uint8_t idx=0;
+#define pin_serwo1 11
+Servo serwo1;
 void setup() {
-  // put your setup code here, to run once:
+  Serial.begin(9600);
+  serwo1.attach(pin_serwo1);
 
 }
 
 void loop() {
-  if(Serial.available()>0){
-  przetworz_wiadomosc(odbierz_wiadomosx());
+  
+      char *wiadomosc = odbierz_wiadomosc();
+      if(wiadomosc != NULL){
+      przetworz_wiadomosc(wiadomosc);
+      for(int i=0; i<5; i++){
+        serwo1.write(tablica_int[i]);
+        delay(1000);
+      }
+      Serial.println("OK");
   }
 }
-char *odbierz_wiadomosx(){
+char *odbierz_wiadomosc(){
   if(Serial.available()>0){
     char znak= Serial.read();
     idx=0;
@@ -25,7 +37,7 @@ char *odbierz_wiadomosx(){
     return tablica;
   }else return NULL;
 }
-void przetworz_wiadomosc(char * wiadomosc){
+void przetworz_wiadomosc(char  *wiadomosc){
   uint8_t idx_wew=0;
   char* token = strtok(wiadomosc, ",");
   while(token!= NULL&&idx_wew<idx){

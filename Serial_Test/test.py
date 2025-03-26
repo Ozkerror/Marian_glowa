@@ -2,26 +2,26 @@ import serial
 import time
 
 port="COM9"
-tablica1=[20, 50, 80, 100, 150]
+tablica1=[20, 50, 80, 100, 150] #tablice zawierajace kolejne wartosci pozycji serwomechanizmu
 tablica2=[120, 100, 80, 50, 30]
-wiadomosc_potwierdzajaca="OK"
-def potwierdzenie(rduino, oczekiwana_wiadomosc):
+wiadomosc_potwierdzajaca="OK" #wiadomosc ktora potwierdza odbior danych
+wiadomosc_startowa="START" #wiadomosc ktora potwierdza gotowosc danych do odbioru
+def potwierdzenie(rduino, oczekiwana_wiadomosc): #funkcja ktora zatrzymuje program i wykonuje sie w kolko poki nie przeslemy przez serial oczekiwanej wiadomosci
     wiadomosc=""
     while True:
-        if rduino.in_waiting > 0:
-            wiadomosc = rduino.readline().decode().strip()
+        if rduino.in_waiting > 0: #jesli w buforze odbiorczym znajduja sie jakiekolwiek dane to warunek spelniony
+            wiadomosc = rduino.readline().decode().strip() #odczytujemy te dane, dekodujemy ciag bajtow na stringa, usuwamy biale znaki czyli spacje, /r, /n
         if wiadomosc == oczekiwana_wiadomosc:
             break
-arduino=serial.Serial(port, 9600)
-string_tablica1 = ",".join(map(str,tablica1)) + "\n"
-string_tablica2 = ",".join(map(str,tablica2)) + "\n"
+arduino=serial.Serial(port, 9600) #inicjalizacja komunikacji przez port szeregowy
+
 while True:
-    arduino.write(string_tablica1.encode())
+    potwierdzenie(arduino, wiadomosc_startowa)
+    arduino.write(bytearray(tablica1)) #przeslij tablice w postaci ciagu bajtow, dziala to dlatego bo przesylamy dane nie wieksze niz 255 czyli max przy jednym bajcie
     potwierdzenie(arduino, wiadomosc_potwierdzajaca)
-    time.sleep(0.2)
-    arduino.write(string_tablica2.encode())
+    potwierdzenie(arduino, wiadomosc_startowa)
+    arduino.write(bytearray(tablica2))
     potwierdzenie(arduino, wiadomosc_potwierdzajaca)
-    time.sleep(0.2)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 arduino.close()

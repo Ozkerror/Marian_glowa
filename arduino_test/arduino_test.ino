@@ -9,7 +9,6 @@ Servo serwo1;
 void setup() {
   Serial.begin(9600);
   serwo1.attach(pin_serwo1);
-
 }
 
 void loop() {

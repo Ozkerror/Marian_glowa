@@ -2,26 +2,29 @@
 #define pin_serwo 11
 #include <Servo.h>
 // Bufor na dane
-uint8_t pozycja[3];
+uint8_t pozycja[5];
 Servo serwo;
+Servo serwo2;
 void setup() {
   Serial.begin(9600);
   
   serwo.attach(pin_serwo);
+  serwo2.attach(12);
   Serial.println("START");
 }
 
 void loop() {
   // Sprawdzamy, czy są dostępne dane
-  if (Serial.available() >= 3) {
+  if (Serial.available() >= 5) {
     // Odczytaj 3 bajty danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 5; i++) {
       pozycja[i] = Serial.read();
     }
     
     // ustawienie 3 kolejnych pozycji serwa
-    for(int i=0; i<3; i++){
+    for(int i=0; i<5; i++){
       serwo.write(pozycja[i]);
+      serwo2.write(pozycja[i]);
       delay(1000);
     }
     
@@ -31,7 +34,11 @@ void loop() {
     Serial.print(", ");
     Serial.print(pozycja[1]);
     Serial.print(", ");
-    Serial.println(pozycja[2]);
+    Serial.print(pozycja[2]);
+    Serial.print(", ");
+    Serial.print(pozycja[3]);
+    Serial.print(", ");
+    Serial.println(pozycja[4]);
     
     // Wysłanie potwierdzenia do Python
     Serial.println("OK");

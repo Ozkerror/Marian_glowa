@@ -28,5 +28,3 @@ while True:
     arduino.write(bytearray(tablica2))
     time.sleep(0.05) #opcjonalny
     potwierdzenie(arduino, wiadomosc_potwierdzajaca)
-
-

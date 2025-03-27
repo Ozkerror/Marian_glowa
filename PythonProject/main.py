@@ -76,17 +76,6 @@ while True:                                     # Odczytywanie klatek nagrania, 
 
     #wywolanie funkcji sprawdzania
 
-    ss = funkcje.sprawdz_ss(prop_x, prop_y)
-    sg = funkcje.sprawdz_sg(prop_x, prop_y)
-    sd = funkcje.sprawdz_sd(prop_x, prop_y)
-    ls = funkcje.sprawdz_ls(prop_x, prop_y)
-    lg = funkcje.sprawdz_lg(prop_x, prop_y)
-    ld = funkcje.sprawdz_ld(prop_x, prop_y)
-    ps = funkcje.sprawdz_ps(prop_x, prop_y)
-    pg = funkcje.sprawdz_pg(prop_x, prop_y)
-    pd = funkcje.sprawdz_pd(prop_x, prop_y)
-    cokolwiek = funkcje.sprawdz_cokolwiek(ss, sg, sd, ls, lg, ld, ps, pg, pd)
-
 
     skrajne_l = funkcje.skrajne_l(x, sz_kamery, 0.05)
     skrajne_p = funkcje.skrajne_p(x, sz_twarzy, sz_kamery, 0.95)
@@ -95,24 +84,8 @@ while True:                                     # Odczytywanie klatek nagrania, 
 
     if not twarz: #ten zostanie spelniony jesli twarz bedzie pustą listą, czyli jesli zadna twarz nie zostanie wykryta
         sektor = 0
-    elif ss:
-        sektor = 1
-    elif sg:
-        sektor = 2
-    elif sd:
-        sektor = 3
-    elif ls:
-        sektor = 4
-    elif lg:
-        sektor = 5
-    elif ld:
-        sektor = 6
-    elif ps:
-        sektor = 7
-    elif pg:
-        sektor = 8
-    elif pd:
-        sektor = 9
+    else:
+        sektor=funkcje.sprawdz_sektor(prop_x, prop_y)
     # sprawdzanie czy sektor sie zmienil
     if sektor != 0 and sektor != poprzedni:
         odliczanie = time.time()
@@ -125,6 +98,7 @@ while True:                                     # Odczytywanie klatek nagrania, 
     komunikacja_arduino(arduino, glowa_kat_lp, glowa_kat_gd, oczy_kat_lp, oczy_kat_gd, wiadomosc_potwierdzajaca)
 
     poprzedni=sektor
+
     cv2.imshow("nagrywanie", klatka) # wyswietla klatke w okienku nagrywanie
     if cv2.waitKey(1) & 0xFF == ord('q'): # pozwolenie uzytkownikowi na zakonczenie dzialania programu poprzez nacisniecie klawisza 'q'
         break

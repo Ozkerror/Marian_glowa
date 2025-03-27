@@ -1,4 +1,4 @@
-// Piny PWM
+// Piny PWM, DZIAŁA
 #define pin_serwo 11
 #include <Servo.h>
 // Bufor na dane

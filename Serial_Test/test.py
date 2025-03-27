@@ -1,7 +1,8 @@
+#DZIAŁA
 import serial
 import time
 
-port="COM9"
+port="COM7"
 tablica1=[20, 50, 80, 100, 150] #tablice zawierajace kolejne wartosci pozycji serwomechanizmu
 tablica2=[120, 100, 80, 50, 30]
 wiadomosc_potwierdzajaca="OK" #wiadomosc ktora potwierdza odbior danych
@@ -27,7 +28,5 @@ while True:
     arduino.write(bytearray(tablica2))
     time.sleep(0.05) #opcjonalny
     potwierdzenie(arduino, wiadomosc_potwierdzajaca)
-    if cv2.waitKey(1) & 0xFF == ord('q'): #jesli wcisniemy q na klawiaturze to wyjdziemy z programu
-        break
-arduino.close()
+
 

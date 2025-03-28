@@ -17,7 +17,7 @@ void setup() {
 
 void loop() {
   // Sprawdzamy, czy są dostępne dane
-  if (Serial.available() >= 5) {
+  if (Serial.available() >= 2) {
     // Odczytaj 3 bajty danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
     for (int i = 0; i < 2; i++) {
       pozycja[i] = Serial.read();

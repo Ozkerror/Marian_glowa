@@ -19,7 +19,7 @@ def potwierdzenie(rduino, oczekiwana_wiadomosc): #funkcja ktora zatrzymuje progr
         time.sleep(0.01) #podobno pomoze uniknac niepotrzebnego obciazenia CPU
 
 def pozycja_serwo(wspolrzedna_twarzy, wymiar_twarzy, wymiar_kamery):
-    proporcja=(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
+    proporcja=1-(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
     pozycja=180*proporcja
     return int(pozycja)
 
@@ -41,14 +41,13 @@ while True:
     if not sprawdzenie:
         break
     szara_klatka = cv2.cvtColor(klatka, cv2.COLOR_BGR2GRAY) # Konwersja obrazu na skale szarosci, klatka - obraz RGB, szara_klatka - nowy obraz w odcienach szarosci
-    twarz = face_cascade.detectMultiScale(szara_klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    twarz = face_cascade.detectMultiScale(szara_klatka, scaleFactor=1.05, minNeighbors=5, minSize=(30, 30))
     if len(twarz) > 0:
         x, y, sz_twarzy, wys_twarzy = twarz[0]
         cv2.rectangle(klatka, (x, y), (x + sz_twarzy, y + wys_twarzy), (100, 100, 100), 3)
         serwo_x=pozycja_serwo(x, sz_twarzy,sz_kamery)
         serwo_y=pozycja_serwo(y, wys_twarzy, wys_kamery)
         pozycje=[serwo_x,serwo_y]
-
 
         potwierdzenie(arduino, wiadomosc_startowa)
         arduino.write(bytearray(pozycje)) #przeslij tablice w postaci ciagu bajtow, dziala to dlatego bo przesylamy dane nie wieksze niz 255 czyli max przy jednym bajcie

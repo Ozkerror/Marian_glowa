@@ -1,15 +1,17 @@
 // Piny PWM, DZIAŁA
-#define pin_serwo 11
+#define pin_serwo_x 11
+#define pin_serwo_y 12
 #include <Servo.h>
 // Bufor na dane
-uint8_t pozycja[5];
-Servo serwo;
-Servo serwo2;
+uint8_t pozycja[2]; //tablica ktora bedzie przechowywac pozcyje serwo
+Servo serwo_x;
+Servo serwo_y;
 void setup() {
   Serial.begin(9600);
-  
-  serwo.attach(pin_serwo);
-  serwo2.attach(12);
+  serwo_x.attach(pin_serwo_x);
+  serwo_y.attach(pin_serwo_y);
+  serwo_x.write(90);
+  serwo_y.write(90);
   Serial.println("START");
 }
 
@@ -17,29 +19,19 @@ void loop() {
   // Sprawdzamy, czy są dostępne dane
   if (Serial.available() >= 5) {
     // Odczytaj 3 bajty danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 2; i++) {
       pozycja[i] = Serial.read();
     }
     
     // ustawienie 3 kolejnych pozycji serwa
-    for(int i=0; i<5; i++){
-      serwo.write(pozycja[i]);
-      serwo2.write(pozycja[i]);
-      delay(1000);
-    }
-    
+    serwo_x.write(pozycja[0]);
+    serwo_y.write(pozycja[1]);
+    delay(300);
     // ten fragment jest po to aby sprawdzic czy dane zostaly przeslane prawidlowo
     Serial.print("Otrzymano dane: ");
     Serial.print(pozycja[0]);
     Serial.print(", ");
-    Serial.print(pozycja[1]);
-    Serial.print(", ");
-    Serial.print(pozycja[2]);
-    Serial.print(", ");
-    Serial.print(pozycja[3]);
-    Serial.print(", ");
-    Serial.println(pozycja[4]);
-    
+    Serial.println(pozycja[1]);
     // Wysłanie potwierdzenia do Python
     Serial.println("OK");
     

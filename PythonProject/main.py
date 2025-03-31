@@ -22,16 +22,21 @@ sektor = 0
 start = 0
 poprzedni = 0
 
-czas_glowa = 3
-
+czas_glowa = 3 #czas w s przez ktory glowa musi przebywac w jednym z bocznych sektorow aby glowa sie ruszyla
+#wspolczynniki potrzebne do odpowiedniego sterowania serwami
 o_wspolczynnik_lp = 1
 o_wspolczynnik_gd = 1
 g_wspolczynnik_lp = 1
 g_wspolczynnik_gd = 1
 odliczanie = 0
+#wartosci domyslne w ktorych marian powinien sie ustawic po wlaczeniu programu
+domyslne_x_glowy=0
+domyslne_y_glowy=0
+domyslne_x_oczu=0
+domyslne_y_oczu=0
 
-
-wiadomosc_potwierdzajaca="potwierdzenie"
+wiadomosc_startowa="START"
+wiadomosc_potwierdzajaca="OK"
 arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunikowac
 
 time.sleep(2)  # zeby sie polaczenie ustabilizowalo
@@ -44,64 +49,16 @@ if not nagranie.isOpened():
 
 sz_kamery = int(nagranie.get(cv2.CAP_PROP_FRAME_WIDTH)) # Pobranie szerokosci klatki wideo w pikselach
 w_kamery = int(nagranie.get(cv2.CAP_PROP_FRAME_HEIGHT)) # Pobranie wysokosci klatki wideo w pikselach
+komunikacja_arduino(arduino, domyslne_x_glowy, domyslne_y_glowy, domyslne_x_oczu, domyslne_y_oczu, wiadomosc_startowa, wiadomosc_potwierdzajaca) #ustawienie glowy i oczu w domyslnej pozycji
 
 
-funkcje.centrowanie(arduino, glowa_kat_lp,glowa_kat_gd,oczy_kat_lp,oczy_kat_gd,wiadomosc_potwierdzajaca)
-
-
-while True:                                     # Odczytywanie klatek nagrania, jesli sprawdzenie jest false to oznacza koniec nagrania
-    sprawdzenie, klatka = nagranie.read()
+while True:
+    sprawdzenie, klatka = nagranie.read() # Odczytywanie klatek nagrania, jesli sprawdzenie jest false to oznacza koniec nagrania
     if not sprawdzenie:
         break
-
-
     szara_klatka = cv2.cvtColor(klatka, cv2.COLOR_BGR2GRAY) # Konwersja obrazu na skale szarosci, klatka - obraz RGB, szara_klatka - nowy obraz w odcienach szarosci
     twarz = face_cascade.detectMultiScale(szara_klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)) # Wykrywanie twarzy, skalowanie obrazu,
-                                                                                                           # minNeighbors - Liczba sąsiadujących prostokątów (kandydatów na twarz), które muszą zostać wykryte, aby uznać, że jest tam faktyczna twarz,
-                                                                                                           # minSize=(30, 30) - Minimalny rozmiar wykrywanej twarzy w pikselach.
-    krotka_x=twarz[0]#wyciagam z obiektu twarz krotke ktora przechowuje wspolrzedne x twarzy w kamerze
-    krotka_y=twarz[1]
-    krotka_sz_twarzy=twarz[2]
-    krotka_wys_twarzy=twarz[3]
-    x=krotka_x[0]#wycaigam z krotki wspolrzedna x pierwszej wykrytej twarzy
-    y=krotka_y[0]
-    sz_twarzy=krotka_sz_twarzy[0]
-    wys_twarzy=krotka_wys_twarzy[0]
-    cv2.rectangle(klatka, (x, y), (x + sz_twarzy, y + wys_twarzy), (100, 100, 100), 3) # Kod przechodzi przez wszystkie wykryte twarze i rysuje wokol nich prostokat
 
-    srodek_x = funkcje.srodek(x, sz_twarzy)
-    srodek_y = funkcje.srodek(y, wys_twarzy)
-    prop_x = funkcje.pozycja_x(x, sz_kamery, sz_twarzy)
-    prop_y = funkcje.pozycja_y(y, w_kamery, wys_twarzy)
-
-    #wywolanie funkcji sprawdzania
-
-
-    skrajne_l = funkcje.skrajne_l(x, sz_kamery, 0.05)
-    skrajne_p = funkcje.skrajne_p(x, sz_twarzy, sz_kamery, 0.95)
-    skrajne_g = funkcje.skrajne_g(y, w_kamery, 0.05)
-    skrajne_d = funkcje.skrajne_d(y, wys_twarzy, w_kamery, 0.95)
-
-    if not twarz: #ten zostanie spelniony jesli twarz bedzie pustą listą, czyli jesli zadna twarz nie zostanie wykryta
-        sektor = 0
-    else:
-        sektor=funkcje.sprawdz_sektor(prop_x, prop_y)
-    # sprawdzanie czy sektor sie zmienil
-    if sektor != 0 and sektor != poprzedni:
-        odliczanie = time.time()
-
-    if skrajne_l or skrajne_g or skrajne_d or skrajne_p or (odliczanie >= czas_glowa):
-        glowa_kat_lp, glowa_kat_gd =ruch_glowy(g_wspolczynnik_lp,g_wspolczynnik_gd, sz_kamery,w_kamery,x,y)
-        odliczanie = 0
-
-    oczy_kat_lp, oczy_kat_gd=ruch_oczu(o_wspolczynnik_lp, o_wspolczynnik_gd, prop_x,prop_y)
-    komunikacja_arduino(arduino, glowa_kat_lp, glowa_kat_gd, oczy_kat_lp, oczy_kat_gd, wiadomosc_potwierdzajaca)
-
-    poprzedni=sektor
-
-    cv2.imshow("nagrywanie", klatka) # wyswietla klatke w okienku nagrywanie
-    if cv2.waitKey(1) & 0xFF == ord('q'): # pozwolenie uzytkownikowi na zakonczenie dzialania programu poprzez nacisniecie klawisza 'q'
-        break
 
 nagranie.release()
 cv2.destroyAllWindows()

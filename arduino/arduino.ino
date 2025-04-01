@@ -54,10 +54,10 @@ void loop() {
             ruch=true;
           }
         }
-        glowa_x.attach(pozycja_aktualna[0]);
-        glowa_y.attach(pozycja_aktualna[1]);
-        oczy_x.attach(pozycja_aktualna[2]);
-        oczy_y.attach(pozycja_aktualna[3]);
+        glowa_x.write(pozycja_aktualna[0]);
+        glowa_y.write(pozycja_aktualna[1]);
+        oczy_x.write(pozycja_aktualna[2]);
+        oczy_y.write(pozycja_aktualna[3]);
         delay(30);
     }
   

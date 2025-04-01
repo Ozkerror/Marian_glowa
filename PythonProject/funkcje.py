@@ -34,14 +34,14 @@ def komunikacja_arduino(arduino, glowa_x, glowa_y, oczy_x, oczy_y, wiad_start, w
 #wyznaczanie pozycji serwa ktore steruje oczami
 def ruch_oczu(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik,minimumm, maximum):
     proporcja=(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
-    pozycja=minimumm+(proporcja*(180-minimumm-maximum))
+    pozycja=minimumm+(proporcja*(maximum-minimumm))
     return int(wspolczynnik*pozycja)
 
  #wyznaczanie pozycji serwa ktore steruje glowa, jest ona bardziej skomplikowana bo musi wyznaczyc najpierw o ile ma sie przesunac serwo wzgledem poprzedniej pozycji
-def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja):
-    odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowec(analogicznie gora-dol)
+def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja, maximum_przemieszczenie):
+    odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowce(analogicznie gora-dol)
     proporcja=odlegosc_od_srodka/(wymiar_kamery/2) #proporcja odleglosc glowy od srodka do wymiaru polowy kamery
-    przesuniecie=wspolczynnik*proporcja*90 #wyznaczanie o ile ma sie zmienic pozycja serwa
+    przesuniecie=wspolczynnik*proporcja*maximum_przemieszczenie #wyznaczanie o ile ma sie zmienic pozycja serwa
     if(poprzednia_pozycja+przesuniecie)<minimum_pozycja: #jesli serwo juz sie nie bedzie moglo bardziej przesunac to ustawiamy skrajna wartosc
         return minimum_pozycja
     elif (poprzednia_pozycja+przesuniecie)>maximum_pozycja: #analogia tylko w druga strone

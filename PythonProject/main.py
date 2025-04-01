@@ -44,10 +44,10 @@ minimum_x_glowy=0
 maximum_x_glowy=0
 minimum_y_glowy=0
 maximum_y_glowy=0
-minimum_x_oczu=0
-maximum_x_oczu=0
-minimum_y_oczu=0
-maximum_y_oczu=0
+minimum_x_oczu=30
+maximum_x_oczu=150
+minimum_y_oczu=50
+maximum_y_oczu=130
 wiadomosc_startowa="START"
 wiadomosc_potwierdzajaca="OK"
 arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunikowac
@@ -80,9 +80,9 @@ while True:
             poprzedni_czas=aktualny_czas
         if (aktualny_czas-poprzedni_czas)>5:
             #oś x
-            pozycja_x_glowy= ruch_glowy(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy)
+            pozycja_x_glowy= ruch_glowy(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy, 45)
             #oś y
-            pozycja_y_glowy= ruch_glowy(wys_twarzy,wys_kamery,y,g_wspolczynnik_y, pozycja_y_glowy, minimum_y_glowy, maximum_y_glowy)
+            pozycja_y_glowy= ruch_glowy(wys_twarzy,wys_kamery,y,g_wspolczynnik_y, pozycja_y_glowy, minimum_y_glowy, maximum_y_glowy, 45)
             #centrowanie oczu
             pozycja_x_oczu=domyslne_x_oczu
             pozycja_y_oczu=domyslne_y_oczu

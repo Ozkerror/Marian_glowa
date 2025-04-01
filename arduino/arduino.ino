@@ -7,7 +7,13 @@
 
 #include <Servo.h>
 //tablica ktora bedzie przechowywac pozcyje serwo
-uint8_t pozycja[4]; 
+uint8_t pozycja_docelowa[4];
+uint8_t pozycja_aktualna[4]; 
+//zmienne pomocnicze
+uint8_t pozycja_oczy_x;
+uint8_t pozycja_oczy_y;
+uint8_t pozycja_glowa_x;
+uint8_t pozycja_glowa_y;
 //tworzenie obiektow serwomechanizmow
 Servo glowa_x;
 Servo glowa_y;
@@ -34,24 +40,37 @@ void loop() {
   // Sprawdzamy, czy są dostępne dane
   if (Serial.available() >= 4) {
     // Odczytaj 3 bajty danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
-    Serial.readBytes(pozycja, 4);
-    
+    Serial.readBytes(pozycja_docelowa, 4);
     // ustawienie pozycji serw
-    glowa_x.write(pozycja[0]);
-    glowa_y.write(pozycja[1]);
-    oczy_x.write(pozycja[2]);
-    oczy_y.write(pozycja[3]);
+    bool ruch=true;
+    while(ruch){
+      ruch=false;
+        for(int i=0;i<4;i++){
+          if(pozycja_aktualna[i]<pozycja_docelowa[i]){
+            pozycja_aktualna[i]++;
+            ruch=true;
+          }else if(pozycja_aktualna[i]>pozycja_docelowa[i]){
+            pozycja_aktualna[i]--;
+            ruch=true;
+          }
+        }
+        glowa_x.attach(pozycja_aktualna[0]);
+        glowa_y.attach(pozycja_aktualna[1]);
+        oczy_x.attach(pozycja_aktualna[2]);
+        oczy_y.attach(pozycja_aktualna[3]);
+    }
+  
     //czekamy chwile, nie wiem czy potrzebne?
     delay(50);
     // ten fragment jest po to aby sprawdzic czy dane zostaly przeslane prawidlowo
     Serial.print("Otrzymano dane: ");
-    Serial.print(pozycja[0]);
+    Serial.print(pozycja_aktualna[0]);
     Serial.print(", ");
-    Serial.print(pozycja[1]);
+    Serial.print(pozycja_aktualna[1]);
     Serial.print(", ");
-    Serial.print(pozycja[2]);
+    Serial.print(pozycja_aktualna[2]);
     Serial.print(", ");
-    Serial.println(pozycja[3]);
+    Serial.println(pozycja_aktualna[3]);
     // Wysłanie potwierdzenia do Python
     Serial.println("OK");
     

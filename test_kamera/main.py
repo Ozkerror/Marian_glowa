@@ -18,9 +18,9 @@ def potwierdzenie(rduino, oczekiwana_wiadomosc): #funkcja ktora zatrzymuje progr
             break
         time.sleep(0.01) #podobno pomoze uniknac niepotrzebnego obciazenia CPU
 
-def pozycja_serwo(wspolrzedna_twarzy, wymiar_twarzy, wymiar_kamery, minimum, maximum):
+def pozycja_serwo(wspolrzedna_twarzy, wymiar_twarzy, wymiar_kamery):
     proporcja=1-(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
-    pozycja=minimum+(proporcja*(maximum-maximum))
+    pozycja=(proporcja*(180))
     return int(pozycja)
 
 
@@ -45,8 +45,8 @@ while True:
     if len(twarz) > 0:
         x, y, sz_twarzy, wys_twarzy = twarz[0]
         cv2.rectangle(klatka, (x, y), (x + sz_twarzy, y + wys_twarzy), (100, 100, 100), 3)
-        serwo_x=pozycja_serwo(x, sz_twarzy,sz_kamery, 30, 150)
-        serwo_y=pozycja_serwo(y, wys_twarzy, wys_kamery, 50, 130)
+        serwo_x=pozycja_serwo(x, sz_twarzy,sz_kamery)
+        serwo_y=pozycja_serwo(y, wys_twarzy, wys_kamery)
         pozycje=[serwo_x,serwo_y]
 
         potwierdzenie(arduino, wiadomosc_startowa)

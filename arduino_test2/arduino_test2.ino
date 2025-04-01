@@ -1,6 +1,6 @@
 // Piny PWM, DZIAŁA
-#define pin_serwo_x 11
-#define pin_serwo_y 12
+#define pin_serwo_x 8
+#define pin_serwo_y 9
 #include <Servo.h>
 // Bufor na dane
 uint8_t pozycja[2]; //tablica ktora bedzie przechowywac pozcyje serwo

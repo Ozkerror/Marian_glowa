@@ -58,10 +58,11 @@ void loop() {
         glowa_y.attach(pozycja_aktualna[1]);
         oczy_x.attach(pozycja_aktualna[2]);
         oczy_y.attach(pozycja_aktualna[3]);
+        delay(30);
     }
   
     //czekamy chwile, nie wiem czy potrzebne?
-    delay(50);
+
     // ten fragment jest po to aby sprawdzic czy dane zostaly przeslane prawidlowo
     Serial.print("Otrzymano dane: ");
     Serial.print(pozycja_aktualna[0]);

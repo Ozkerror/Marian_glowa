@@ -45,7 +45,7 @@ while True:
     if len(twarz) > 0:
         x, y, sz_twarzy, wys_twarzy = twarz[0]
         cv2.rectangle(klatka, (x, y), (x + sz_twarzy, y + wys_twarzy), (100, 100, 100), 3)
-        serwo_x=pozycja_serwo(x, sz_twarzy,sz_kamery, 30, 150)
+        serwo_x=pozycja_serwo(x, sz_twarzy,sz_kamery, 50, 130)
         serwo_y=pozycja_serwo(y, wys_twarzy, wys_kamery,30, 150)
         pozycje=[serwo_x,serwo_y]
 

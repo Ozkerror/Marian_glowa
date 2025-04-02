@@ -1,6 +1,6 @@
 // Piny PWM, DZIAŁA
-#define pin_serwo_x 8
-#define pin_serwo_y 9
+#define pin_serwo_x 10
+#define pin_serwo_y 11
 #include <Servo.h>
 // Bufor na dane
 uint8_t pozycja[2]; //tablica ktora bedzie przechowywac pozcyje serwo
@@ -26,7 +26,7 @@ void loop() {
     // ustawienie 3 kolejnych pozycji serwa
     serwo_x.write(pozycja[0]);
     serwo_y.write(pozycja[1]);
-    delay(300);
+    delay(200);
     // ten fragment jest po to aby sprawdzic czy dane zostaly przeslane prawidlowo
     Serial.print("Otrzymano dane: ");
     Serial.print(pozycja[0]);

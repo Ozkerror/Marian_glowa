@@ -41,13 +41,13 @@ def ruch_oczu(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik,min
 def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja, maximum_przemieszczenie):
     odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowce(analogicznie gora-dol)
     proporcja=odlegosc_od_srodka/(wymiar_kamery/2) #proporcja odleglosc glowy od srodka do wymiaru polowy kamery
-    przesuniecie=wspolczynnik*proporcja*maximum_przemieszczenie #wyznaczanie o ile ma sie zmienic pozycja serwa
+    przesuniecie=proporcja*maximum_przemieszczenie #wyznaczanie o ile ma sie zmienic pozycja serwa
     if(poprzednia_pozycja+przesuniecie)<minimum_pozycja: #jesli serwo juz sie nie bedzie moglo bardziej przesunac to ustawiamy skrajna wartosc
         return minimum_pozycja
     elif (poprzednia_pozycja+przesuniecie)>maximum_pozycja: #analogia tylko w druga strone
         return maximum_pozycja
     else:
-        return int(poprzednia_pozycja+przesuniecie) #jesli wszystko git to pozycja serwa to poprzednia pozycja plus zmiana
+        return int(wspolczynnik*(poprzednia_pozycja+przesuniecie)) #jesli wszystko git to pozycja serwa to poprzednia pozycja plus zmiana
 
 #funkcja pomocnicza wyznaczajaca stosunek srodka twarzy do calej dlugosci obrazu
 def proporcja_x(x, sz_kamery, sz_glowy):

@@ -34,8 +34,8 @@ def komunikacja_arduino(arduino, glowa_x, glowa_y, oczy_x, oczy_y, wiad_start, w
 #wyznaczanie pozycji serwa ktore steruje oczami
 def ruch_oczu(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik,minimumm, maximum):
     proporcja=(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
-    pozycja=minimumm+(proporcja*(maximum-minimumm))
-    return int(wspolczynnik*pozycja)
+    pozycja=minimumm+(proporcja*(maximum-minimumm)*wspolczynnik)
+    return int(pozycja)
 
  #wyznaczanie pozycji serwa ktore steruje glowa, jest ona bardziej skomplikowana bo musi wyznaczyc najpierw o ile ma sie przesunac serwo wzgledem poprzedniej pozycji
 def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja, maximum_przemieszczenie):

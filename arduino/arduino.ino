@@ -28,8 +28,8 @@ void setup() {
   oczy_x.attach(pin_oczy_x);
   oczy_y.attach(pin_oczy_y);
   //przypisanie pozycji bazowych, trzeba jescze sie nad tym zastanowic
-  glowa_x.write(90);
-  glowa_y.write(90);
+  glowa_x.write(95);
+  glowa_y.write(65);
   oczy_x.write(90);
   oczy_y.write(90);
   //wysalnie wiadomosci ze arduino gotowe do przyjecia danych

@@ -31,8 +31,8 @@ g_wspolczynnik_x = 1
 g_wspolczynnik_y = 1
 odliczanie = 0
 #wartosci domyslne w ktorych marian powinien sie ustawic po wlaczeniu programu
-domyslne_x_glowy=90
-domyslne_y_glowy=90
+domyslne_x_glowy=95
+domyslne_y_glowy=65
 domyslne_x_oczu=90
 domyslne_y_oczu=90
 #zmienne w ktorych bedzie przechowywana pozycja serw
@@ -41,14 +41,14 @@ pozycja_y_glowy = domyslne_y_glowy
 pozycja_x_oczu = domyslne_x_oczu
 pozycja_y_oczu = domyslne_y_oczu
 #zakresy serw dla glowy i oczu
-minimum_x_glowy=30
-maximum_x_glowy=150
-minimum_y_glowy=50
-maximum_y_glowy=130
-minimum_x_oczu=30
-maximum_x_oczu=150
-minimum_y_oczu=50
-maximum_y_oczu=130
+minimum_x_glowy=50
+maximum_x_glowy=140
+minimum_y_glowy=55
+maximum_y_glowy=95
+minimum_x_oczu=45
+maximum_x_oczu=135
+minimum_y_oczu=45
+maximum_y_oczu=135
 wiadomosc_startowa="START"
 wiadomosc_potwierdzajaca="OK"
 arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunikowac

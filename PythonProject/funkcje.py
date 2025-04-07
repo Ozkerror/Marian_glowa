@@ -61,25 +61,26 @@ def proporcja_y(y, w_kamery, w_glowy):
     prop_y = srodek_glowy_y / w_kamery
     return prop_y
 
-    #sprawdzanie czy twarz znajduje sie w konkretnych polach siatki
+
 def sprawdz_sektor(x, sz_kamery, sz_glowy, y, wys_kamery, wys_glowy):
-    prop_x=proporcja_x(x, sz_kamery, sz_glowy)
-    prop_y=proporcja_y(y, wys_kamery, wys_glowy)
-    if(0.2 < prop_x < 0.8 and 0.2 < prop_y < 0.8):
+    prop_x = proporcja_x(x, sz_kamery, sz_glowy)
+    prop_y = proporcja_y(y, wys_kamery, wys_glowy)
+
+    if 0.3 < prop_x < 0.7 and 0.3 < prop_y < 0.7:
         return Sektor.SS
-    if(0.2 < prop_x < 0.8 and prop_y > 0.8):
+    if (0.3 < prop_x < 0.7) and prop_y > 0.7:
         return Sektor.SG
-    if(0.2 < prop_x < 0.8 and prop_y < 0.2):
+    if (0.3 < prop_x < 0.7) and prop_y < 0.3:
         return Sektor.SD
-    if(prop_x < 0.2 and 0.2 < prop_y < 0.8):
+    if prop_x < 0.3 and (0.3 < prop_y < 0.7):
         return Sektor.LS
-    if(prop_x < 0.2 and prop_y > 0.8):
+    if prop_x < 0.3 and prop_y > 0.7:
         return Sektor.LG
-    if(prop_x < 0.2 and prop_y < 0.2):
+    if prop_x < 0.3 and prop_y < 0.3:
         return Sektor.LD
-    if(prop_x > 0.8 and 0.2 < prop_y < 0.8):
+    if prop_x > 0.7 and (0.3 < prop_y < 0.7):
         return Sektor.PS
-    if(prop_x > 0.8 and prop_y > 0.8):
+    if prop_x > 0.7 and prop_y > 0.7:
         return Sektor.PG
-    if(prop_x > 0.8 and prop_y < 0.2):
+    if prop_x > 0.7 and prop_y < 0.3:
         return Sektor.PD

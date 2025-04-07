@@ -75,24 +75,32 @@ while True:
     if len(twarz)>0: #obliczenie wykonywane są tylko i wylacznie gdy jakakolwiek twarz jest wykryta
         x, y, sz_twarzy, wys_twarzy = twarz[0]
         sektor=funkcje.sprawdz_sektor(x,sz_kamery,sz_twarzy,y, wys_kamery, wys_twarzy)
-        if sektor!=Sektor.SS:
+        if sektor==Sektor.SS:
             aktualny_czas=time.perf_counter()
-        else:
-            poprzedni_czas=aktualny_czas
-        if (aktualny_czas-poprzedni_czas)>5:
+
+        if (time.perf_counter()-aktualny_czas)>5:
             #oś x
             pozycja_x_glowy= ruch_glowy(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy, 45)
             #oś y
             pozycja_y_glowy= ruch_glowy(wys_twarzy,wys_kamery,y,g_wspolczynnik_y, pozycja_y_glowy, minimum_y_glowy, maximum_y_glowy, 45)
-            #centrowanie oczu
-            pozycja_x_oczu=domyslne_x_oczu
-            pozycja_y_oczu=domyslne_y_oczu
+            #ustawienie pozycji oczu
+            #jesli glowa w jednej ze skrajnosci to ruszaj normalnie oczami, ale jesli glowa nie znajduje sie w skrajnej pozycji to oczy sie centrują
+            if pozycja_x_glowy<=minimum_x_glowy or pozycja_x_glowy>=maximum_x_glowy:
+                pozycja_x_oczu = ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, minimum_x_oczu, maximum_x_oczu)
+            else:
+                pozycja_x_oczu=domyslne_x_oczu
+            if pozycja_y_glowy<=minimum_y_glowy or pozycja_y_glowy>=maximum_y_glowy:
+                pozycja_y_oczu = ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
+            else:
+                pozycja_y_oczu=domyslne_y_oczu
             #zresetowanie odliczania
-            poprzedni_czas=aktualny_czas
+            aktualny_czas=time.perf_counter()
         else:
             pozycja_x_oczu=ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x,minimum_x_oczu, maximum_x_oczu)
             pozycja_y_oczu=ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
         komunikacja_arduino(arduino,pozycja_x_glowy, pozycja_y_glowy, pozycja_x_oczu, pozycja_y_oczu, wiadomosc_startowa, wiadomosc_potwierdzajaca)
+    #resetuje czas jesli zadna twarz nie znalazla sie w kamerze
+    aktualny_czas=time.perf_counter()
     cv2.imshow("nagrywanie", klatka)  # wyswietla klatke w okienku nagrywanie
     if cv2.waitKey(1) & 0xFF == ord('q'):  # pozwolenie uzytkownikowi na zakonczenie dzialania programu poprzez nacisniecie klawisza 'q'
         break

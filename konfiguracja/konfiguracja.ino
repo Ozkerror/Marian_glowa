@@ -57,6 +57,7 @@ void setup() {
 void loop() {
   if(millis()-czas>1000){
     wyswietl_pozycje();
+    Serial.println("pozycja pot = "+String(wyznacz_pozycje()));
     czas=millis();
   }
   if(Serial.available()>0){

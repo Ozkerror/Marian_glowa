@@ -5,7 +5,7 @@
 #define g_y_pin2 10
 #define o_x_pin 11
 #define o_y_pin 12
-#define poten_pin 6
+#define poten_pin A0
 #define butt_pin 5
 uint8_t pozycja_g_x=90;
 uint8_t pozycja_g_y1=90;
@@ -22,7 +22,7 @@ Servo o_x;
 Servo o_y;
 
 uint8_t wyznacz_pozycje(void){
-  uint8_t pozycja = analogRead(poten_pin)*180/1023;
+  uint8_t pozycja = analogRead(poten_pin)*180.0/1023.0;
   return pozycja;
 }
 void wyswietl_pozycje() {
@@ -45,9 +45,9 @@ void setup() {
   g_y2.attach(g_y_pin2);
   o_x.attach(o_x_pin);
   o_y.attach(o_y_pin);
-  g_x.write(90);
-  g_y1.write(90);
-  g_y2.write(90);
+  g_x.write(95);
+  g_y1.write(70);
+  g_y2.write(70);
   o_x.write(90);
   o_y.write(90);
   Serial.begin(9600);

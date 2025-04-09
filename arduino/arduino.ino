@@ -1,35 +1,61 @@
 
 // Piny serwo
 #define pin_glowa_x 9
-#define pin_glowa_y 10
-#define pin_oczy_x 11
-#define pin_oczy_y 12
+#define pin_glowa_y1 10
+#define pin_glowa_y2 11
+#define pin_oczy_x 12
+#define pin_oczy_y 13
 
 #include <Servo.h>
 //tablica ktora bedzie przechowywac pozcyje serwo
-uint8_t pozycja_docelowa[4];
-uint8_t pozycja_aktualna[4]; 
+uint8_t pozycja_docelowa[5];
+uint8_t pozycja_aktualna[5]; 
 //zmienne pomocnicze
 uint8_t pozycja_oczy_x;
 uint8_t pozycja_oczy_y;
 uint8_t pozycja_glowa_x;
-uint8_t pozycja_glowa_y;
+uint8_t pozycja_glowa_y1;
+uint8_t pozycja_glowa_y2
 //tworzenie obiektow serwomechanizmow
 Servo glowa_x;
-Servo glowa_y;
+Servo glowa_y1;
+Servo glowa_y2;
 Servo oczy_x;
 Servo oczy_y;
+
+void ustaw_serwa(void){
+  glowa_x.write(pozycja_aktualna[0]);
+  glowa_y1.write(pozycja_aktualna[1]);
+  glowa_y2.write(pozycja_aktualna[2])
+  oczy_x.write(pozycja_aktualna[3]);
+  oczy_y.write(pozycja_aktualna[4]);
+}
+
+void wypisz_pozycje(void){
+  Serial.print("Otrzymano dane: ");
+  Serial.print(pozycja_aktualna[0]);
+  Serial.print(", ");
+  Serial.print(pozycja_aktualna[1]);
+  Serial.print(", ");
+  Serial.print(pozycja_aktualna[2]);
+  Serial.print(", ");
+  Serial.print(pozycja_aktualna[3]);
+  Serial.print(", ");
+  Serial.println()(pozycja_aktualna[3]);
+}
 
 void setup() {
   Serial.begin(9600);
   //przypisanie pinow do serwo
   glowa_x.attach(pin_glowa_x);
-  glowa_y.attach(pin_glowa_y);
+  glowa_y1.attach(pin_glowa_y1);
+  glowa_y2.attach(pin_glowa_y2);
   oczy_x.attach(pin_oczy_x);
   oczy_y.attach(pin_oczy_y);
   //przypisanie pozycji bazowych, trzeba jescze sie nad tym zastanowic
-  glowa_x.write(95);
-  glowa_y.write(65);
+  glowa_x.write(103);
+  glowa_y1.write(95);
+  glowa_y2.write(95);
   oczy_x.write(90);
   oczy_y.write(90);
   //wysalnie wiadomosci ze arduino gotowe do przyjecia danych
@@ -38,14 +64,14 @@ void setup() {
 
 void loop() {
   // Sprawdzamy, czy są dostępne dane
-  if (Serial.available() >= 4) {
-    // Odczytaj 3 bajty danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
-    Serial.readBytes(pozycja_docelowa, 4);
+  if (Serial.available() >= 5) {
+    // Odczytaj 5 bajtow danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
+    Serial.readBytes(pozycja_docelowa, 5);
     // ustawienie pozycji serw
     bool ruch=true;
     while(ruch){
       ruch=false;
-        for(int i=0;i<4;i++){
+        for(int i=0;i<5;i++){
           if(pozycja_aktualna[i]<pozycja_docelowa[i]){
             pozycja_aktualna[i]++;
             ruch=true;
@@ -54,24 +80,11 @@ void loop() {
             ruch=true;
           }
         }
-        glowa_x.write(pozycja_aktualna[0]);
-        glowa_y.write(pozycja_aktualna[1]);
-        oczy_x.write(pozycja_aktualna[2]);
-        oczy_y.write(pozycja_aktualna[3]);
+        ustaw_serwa();
         delay(30);
     }
-  
-    //czekamy chwile, nie wiem czy potrzebne?
-
     // ten fragment jest po to aby sprawdzic czy dane zostaly przeslane prawidlowo
-    Serial.print("Otrzymano dane: ");
-    Serial.print(pozycja_aktualna[0]);
-    Serial.print(", ");
-    Serial.print(pozycja_aktualna[1]);
-    Serial.print(", ");
-    Serial.print(pozycja_aktualna[2]);
-    Serial.print(", ");
-    Serial.println(pozycja_aktualna[3]);
+    wypisz_pozycje();
     // Wysłanie potwierdzenia do Python
     Serial.println("OK");
     

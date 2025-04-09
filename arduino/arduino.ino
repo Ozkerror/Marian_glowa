@@ -15,7 +15,7 @@ uint8_t pozycja_oczy_x;
 uint8_t pozycja_oczy_y;
 uint8_t pozycja_glowa_x;
 uint8_t pozycja_glowa_y1;
-uint8_t pozycja_glowa_y2
+uint8_t pozycja_glowa_y2;
 //tworzenie obiektow serwomechanizmow
 Servo glowa_x;
 Servo glowa_y1;
@@ -26,7 +26,7 @@ Servo oczy_y;
 void ustaw_serwa(void){
   glowa_x.write(pozycja_aktualna[0]);
   glowa_y1.write(pozycja_aktualna[1]);
-  glowa_y2.write(pozycja_aktualna[2])
+  glowa_y2.write(pozycja_aktualna[2]);
   oczy_x.write(pozycja_aktualna[3]);
   oczy_y.write(pozycja_aktualna[4]);
 }
@@ -41,7 +41,7 @@ void wypisz_pozycje(void){
   Serial.print(", ");
   Serial.print(pozycja_aktualna[3]);
   Serial.print(", ");
-  Serial.println()(pozycja_aktualna[3]);
+  Serial.println((pozycja_aktualna[4]));
 }
 
 void setup() {

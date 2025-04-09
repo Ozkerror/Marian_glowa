@@ -25,9 +25,9 @@ def potwierdzenie(rduino, oczekiwana_wiadomosc):
         time.sleep(0.01) #podobno pomoze uniknac niepotrzebnego obciazenia CPU
 
 #funkcja ktora zajmuje sie przeslaniem danych do arduino
-def komunikacja_arduino(arduino, glowa_x, glowa_y, oczy_x, oczy_y, wiad_start, wiad_potwierdzajaca):
+def komunikacja_arduino(arduino, glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y, wiad_start, wiad_potwierdzajaca):
     potwierdzenie(arduino, wiad_start) #oczekiwanie na gotowosc arduino
-    dane=[glowa_x, glowa_y, oczy_x, oczy_y]
+    dane=[glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y]
     arduino.write(bytearray(dane)) #przeslanie ciagu bajtow , 1 bajt to jedna pozycja serwa poniewa zawieraja sie one w zakresie od 0 do 255
     potwierdzenie(arduino, wiad_potwierdzajaca) #oczekiwanie na potwierdzenie odbioru danych
 
@@ -50,6 +50,18 @@ def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, p
         return int(wspolczynnik*(poprzednia_pozycja+przesuniecie)) #jesli wszystko git to pozycja serwa to poprzednia pozycja plus zmiana
 
 #funkcja pomocnicza wyznaczajaca stosunek srodka twarzy do calej dlugosci obrazu
+
+def ruch_glowy_dwa(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja, maximum_przemieszczenie):
+    odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowce(analogicznie gora-dol)
+    proporcja=-(odlegosc_od_srodka/(wymiar_kamery/2)) #proporcja odleglosc glowy od srodka do wymiaru polowy kamery
+    przesuniecie=proporcja*maximum_przemieszczenie #wyznaczanie o ile ma sie zmienic pozycja serwa
+    if(poprzednia_pozycja+przesuniecie)<minimum_pozycja: #jesli serwo juz sie nie bedzie moglo bardziej przesunac to ustawiamy skrajna wartosc
+        return minimum_pozycja
+    elif (poprzednia_pozycja+przesuniecie)>maximum_pozycja: #analogia tylko w druga strone
+        return maximum_pozycja
+    else:
+        return int(wspolczynnik*(poprzednia_pozycja+przesuniecie)) #jesli wszystko git to pozycja serwa to poprzednia pozycja plus zmiana
+
 def proporcja_x(x, sz_kamery, sz_glowy):
     srodek_glowy_x = x + (sz_glowy / 2)
     prop_x = srodek_glowy_x / sz_kamery

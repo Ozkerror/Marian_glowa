@@ -66,7 +66,8 @@ if not nagranie.isOpened():
 sz_kamery = int(nagranie.get(cv2.CAP_PROP_FRAME_WIDTH)) # Pobranie szerokosci klatki wideo w pikselach
 wys_kamery = int(nagranie.get(cv2.CAP_PROP_FRAME_HEIGHT)) # Pobranie wysokosci klatki wideo w pikselach
 #komunikacja_arduino(arduino, domyslne_x_glowy, domyslne_y_glowy, domyslne_x_oczu, domyslne_y_oczu, wiadomosc_startowa, wiadomosc_potwierdzajaca) #ustawienie glowy i oczu w domyslnej pozycji
-
+czas_obecny = time.perf_counter()
+czas_poprzedni = time.perf_counter()
 
 while True:
     sprawdzenie, klatka = nagranie.read() # Odczytywanie klatek nagrania, jesli sprawdzenie jest false to oznacza koniec nagrania
@@ -75,54 +76,48 @@ while True:
     szara_klatka = cv2.cvtColor(klatka, cv2.COLOR_BGR2GRAY) # Konwersja obrazu na skale szarosci, klatka - obraz RGB, szara_klatka - nowy obraz w odcienach szarosci
     twarz = face_cascade.detectMultiScale(szara_klatka, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)) # Wykrywanie twarzy, skalowanie obrazu,
     if len(twarz)>0: #obliczenie wykonywane są tylko i wylacznie gdy jakakolwiek twarz jest wykryta
+        #wyciagnij dane z krotki twarz
         x, y, sz_twarzy, wys_twarzy = twarz[0]
-        # Logika czasowa i sektory
+        #sprawdz w jakim sektorze znajduje sie twarz i przypisz wartosc odpowiadajaca danemu sektorowi do zmiennej sektor
         sektor = funkcje.sprawdz_sektor(x, sz_kamery, sz_twarzy, y, wys_kamery, wys_twarzy)
-        czas_obecny = time.perf_counter()
+        cv2.rectangle(klatka, (x, y), (x + sz_twarzy, y + wys_twarzy), (0, 255, 0), 2)
+        #LOGIKA CZASOWA
+        #perf_counter zwraca czas dzialania programu w sekundach. Aby odmierzac czas to korzystam z dwoch zmiennych pomocniczyc , czas_poprzedni i czas_aktualny
+        #jesli chce zresetowac czas to przypisuje perf_counter do zmiennej czas_poprzedni, jesli chce zaczac odliczanie to przypisuje perf_counter do zmiennej czas_aktualny upewniajac
+        #sie z w miedzy czasie nie przypisze nic do zmiennej poprzedni_czas aby nie zresetowac odliczanie
 
+        #jesli twarz w srodkowym sektorze to wyznacz pozycje oczu i zrownaj ze soba czas_obecny i czas_poprzedni
         if sektor == Sektor.SS:
-            # Twarz jest w środku – resetujemy licznik i przywracamy domyślne ustawienie
-            czas_wyjscia_z_sektora = None
-            czy_glowa_ruszyla = False
-
-            # Resetuj oczy do centrum, jeśli głowa nie jest na krańcu
-            if pozycja_x_glowy <= minimum_x_glowy or pozycja_x_glowy >= maximum_x_glowy:
-                pozycja_x_oczu = ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, minimum_x_oczu, maximum_x_oczu)
-            else:
-                pozycja_x_oczu = domyslne_x_oczu
-
-            if pozycja_y_glowy1 <= minimum_y_glowy or pozycja_y_glowy1 >= maximum_y_glowy:
-                pozycja_y_oczu = ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
-            else:
-                pozycja_y_oczu = domyslne_y_oczu
-
+            pozycja_x_oczu = ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, minimum_x_oczu, maximum_x_oczu)
+            pozycja_y_oczu = ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
+            czas_obecny=time.perf_counter()
+            czas_poprzedni=time.perf_counter()
+        #jesli twarz nie znajduje sie w srodkowym sektorze
         else:
-            # Twarz nie jest w sektorze SS
-            if czas_wyjscia_z_sektora is None:
-                czas_wyjscia_z_sektora = czas_obecny
-
-            # Jeżeli przekroczył czas 2s – ruszamy głową i oczy się centrować nie muszą
-            if (czas_obecny - czas_wyjscia_z_sektora > 2.0) and not czy_glowa_ruszyla:
-                pozycja_x_glowy = ruch_glowy(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy,
-                                             minimum_x_glowy, maximum_x_glowy, 8)
-                pozycja_y_glowy1 = ruch_glowy(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy1,
-                                              minimum_y_glowy, maximum_y_glowy, 8)
-                pozycja_y_glowy2 = ruch_glowy_dwa(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy2,
-                                                  minimum_y_glowy, maximum_y_glowy, 8)
-                czy_glowa_ruszyla = True
-
-            # Dopóki głowa się nie ruszy – ruszamy oczami
-            if not czy_glowa_ruszyla:
+            czas_obecny=time.perf_counter()
+            #jesli odliczonny czas wiekszy od 3 sekund to ustaw glowe w odpowiedniej pozycji
+            if(czas_obecny-czas_poprzedni)>3:
+                pozycja_x_glowy = ruch_glowy(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy, 8)
+                pozycja_y_glowy1 = ruch_glowy(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy1, minimum_y_glowy, maximum_y_glowy, 8)
+                pozycja_y_glowy2 = ruch_glowy_dwa(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy2, minimum_y_glowy, maximum_y_glowy, 8)
+                #zresetuj odliczanie
+                czas_poprzedni=time.perf_counter()
+                #jesli glowa w skrajnych pozycjach to wtedy ruszamy normalnie oczami
+                if pozycja_x_glowy <= minimum_x_glowy or pozycja_x_glowy >= maximum_x_glowy:
+                    pozycja_x_oczu = ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, minimum_x_oczu, maximum_x_oczu)
+                #jesli glowa nie w skrajnej pozycji to zakladamy ze glowa dojedzie mniej wiecej na wprost czyjejs twarzy, wiec oczy wracaja do pozycji bazowej
+                else:
+                    pozycja_x_oczu = domyslne_x_oczu
+                if pozycja_y_glowy1 <= minimum_y_glowy or pozycja_y_glowy1 >= maximum_y_glowy:
+                    pozycja_y_oczu = ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
+                else:
+                    pozycja_y_oczu = domyslne_y_oczu
+            #jesli twarz jest niewystarczajaco dlugo poza srodkowym polem to normalnie rusza tylko oczami
+            else:
                 pozycja_x_oczu = ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, minimum_x_oczu, maximum_x_oczu)
                 pozycja_y_oczu = ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
-
-        # Wysyłamy pozycje do Arduino
-
-        komunikacja_arduino(arduino, pozycja_x_glowy, pozycja_y_glowy1, pozycja_y_glowy2, pozycja_x_oczu,
-                            pozycja_y_oczu, wiadomosc_startowa, wiadomosc_potwierdzajaca)
-
-    #resetuje czas jesli zadna twarz nie znalazla sie w kamerze
-    aktualny_czas=time.perf_counter()
+        #wyslij dane do arduino
+        komunikacja_arduino(arduino, pozycja_x_glowy, pozycja_y_glowy1, pozycja_y_glowy2, pozycja_x_oczu, pozycja_y_oczu, wiadomosc_startowa, wiadomosc_potwierdzajaca)
     cv2.imshow("nagrywanie", klatka)  # wyswietla klatke w okienku nagrywanie
     if cv2.waitKey(1) & 0xFF == ord('q'):  # pozwolenie uzytkownikowi na zakonczenie dzialania programu poprzez nacisniecie klawisza 'q'
         break

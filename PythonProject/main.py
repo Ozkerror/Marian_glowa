@@ -96,7 +96,7 @@ while True:
         else:
             czas_obecny=time.perf_counter()
             #jesli odliczonny czas wiekszy od 3 sekund to ustaw glowe w odpowiedniej pozycji
-            if(czas_obecny-czas_poprzedni)>2:
+            if(czas_obecny-czas_poprzedni)>0.5:
                 pozycja_x_glowy = ruch_glowy_dwa(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy, 20)
                 pozycja_y_glowy1 = ruch_glowy(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy1, minimum_y_glowy, maximum_y_glowy, 8)
                 pozycja_y_glowy2 = ruch_glowy_dwa(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy2, minimum_y_glowy, maximum_y_glowy, 8)

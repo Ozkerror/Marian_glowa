@@ -22,7 +22,7 @@ def potwierdzenie(rduino, oczekiwana_wiadomosc):
             print(wiadomosc) #linijka ktora w polaczeniu z programem w C pozwala na sprawdzenie czy dane zostaly przeslane poprawnie.
         if wiadomosc == oczekiwana_wiadomosc:
             break
-        time.sleep(0.01) #podobno pomoze uniknac niepotrzebnego obciazenia CPU
+        #time.sleep(0.01) #podobno pomoze uniknac niepotrzebnego obciazenia CPU
 
 #funkcja ktora zajmuje sie przeslaniem danych do arduino
 def komunikacja_arduino(arduino, glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y, wiad_start, wiad_potwierdzajaca):
@@ -78,7 +78,7 @@ def sprawdz_sektor(x, sz_kamery, sz_glowy, y, wys_kamery, wys_glowy):
     prop_x = proporcja_x(x, sz_kamery, sz_glowy)
     prop_y = proporcja_y(y, wys_kamery, wys_glowy)
 
-    if 0.3 < prop_x < 0.7 and 0.3 < prop_y < 0.7:
+    if 0.3 < prop_x < 0.7 and 0.35 < prop_y < 0.65:
         return Sektor.SS
     if (0.3 < prop_x < 0.7) and prop_y > 0.7:
         return Sektor.SG

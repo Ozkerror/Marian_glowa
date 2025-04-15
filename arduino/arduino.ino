@@ -63,6 +63,7 @@ void setup() {
 }
 
 void loop() {
+  
   // Sprawdzamy, czy są dostępne dane
   if (Serial.available() >= 5) {
     // Odczytaj 5 bajtow danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
@@ -88,8 +89,7 @@ void loop() {
     // Wysłanie potwierdzenia do Python
     Serial.println("OK");
     
-    // Wysyłanie informacji o gotowości do odbioru kolejnych danych
-    delay(50);  // Opcjonalne opóźnienie dla stabilności
+    // Wysyłanie informacji o gotowości do odbioru kolejnych danych  // Opcjonalne opóźnienie dla stabilności
     Serial.println("START");
   }
 }

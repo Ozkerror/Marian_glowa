@@ -1,18 +1,10 @@
-#1 zalaczenie kamerki
-#2 centrowanie osoba w obiektywie start rozpoznawania
-#3 zcheckowanie polozenia osoby w danym obszarze (prostokacie)ruch_glowy(wys_twarzy,wys_kamery,y,g_wspolczynnik_y, pozycja_y_glowy, minimum_y_glowy, maximum_y_glowy, 45)
-#4 marian jezdzi oczami do okreslonego czasu jesli obiekt jest nieruchomy to centruje oczy, dojezdza glowa
-#5 jesli osoba wychodzi poza obszar widocznosci to marian jedzie glowa niezaleznie od czasu
-#6 obliczenia w pythonie
-
-
 import cv2
 import serial
 import time
 import funkcje
 from funkcje import ruch_oczu, ruch_glowy, komunikacja_arduino, Sektor, ruch_glowy_dwa
 
-port='COM7' #tutaj nalezy wpisac port do ktorego podlaczone jest arduino
+port='COM5' #tutaj nalezy wpisac port do ktorego podlaczone jest arduino
 oczy_kat_lp=0
 oczy_kat_gd=0
 glowa_kat_lp=0
@@ -57,7 +49,7 @@ arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunik
 
 time.sleep(2)  # zeby sie polaczenie ustabilizowalo
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') # Zaladowanie klasyfikatora, model do wykrywania twarzy
-nagranie = cv2.VideoCapture(0)
+nagranie = cv2.VideoCapture(1)
 
 if not nagranie.isOpened():
     print("nie udalo sie otworzyc kamery")
@@ -97,7 +89,7 @@ while True:
             czas_obecny=time.perf_counter()
             #jesli odliczonny czas wiekszy od 3 sekund to ustaw glowe w odpowiedniej pozycji
             if(czas_obecny-czas_poprzedni)>3:
-                pozycja_x_glowy = ruch_glowy(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy, 8)
+                pozycja_x_glowy = ruch_glowy_dwa(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy, 15)
                 pozycja_y_glowy1 = ruch_glowy(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy1, minimum_y_glowy, maximum_y_glowy, 8)
                 pozycja_y_glowy2 = ruch_glowy_dwa(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy2, minimum_y_glowy, maximum_y_glowy, 8)
                 #zresetuj odliczanie

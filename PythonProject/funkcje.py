@@ -37,6 +37,12 @@ def ruch_oczu(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik,min
     pozycja=minimumm+(proporcja*(maximum-minimumm)*wspolczynnik)
     return int(pozycja)
 
+#ruch w oczu w przeciwną strone
+def ruch_oczu_dwa(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik,minimumm, maximum):
+    proporcja=1-(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
+    pozycja=minimumm+(proporcja*(maximum-minimumm)*wspolczynnik)
+    return int(pozycja)
+
  #wyznaczanie pozycji serwa ktore steruje glowa, jest ona bardziej skomplikowana bo musi wyznaczyc najpierw o ile ma sie przesunac serwo wzgledem poprzedniej pozycji
 def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja, maximum_przemieszczenie):
     odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowce(analogicznie gora-dol)
@@ -78,7 +84,7 @@ def sprawdz_sektor(x, sz_kamery, sz_glowy, y, wys_kamery, wys_glowy):
     prop_x = proporcja_x(x, sz_kamery, sz_glowy)
     prop_y = proporcja_y(y, wys_kamery, wys_glowy)
 
-    if 0.3 < prop_x < 0.7 and 0.3 < prop_y < 0.7:
+    if 0.35 < prop_x < 0.65 and 0.35 < prop_y < 0.65:
         return Sektor.SS
     if (0.3 < prop_x < 0.7) and prop_y > 0.7:
         return Sektor.SG

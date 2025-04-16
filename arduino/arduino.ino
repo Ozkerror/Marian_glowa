@@ -1,5 +1,3 @@
-
-// Piny serwo
 #define pin_glowa_x 9
 #define pin_glowa_y1 10
 #define pin_glowa_y2 11
@@ -7,16 +5,10 @@
 #define pin_oczy_y 13
 
 #include <Servo.h>
-//tablica ktora bedzie przechowywac pozcyje serwo
+
 uint8_t pozycja_docelowa[5];
-uint8_t pozycja_aktualna[5]; 
-//zmienne pomocnicze
-uint8_t pozycja_oczy_x;
-uint8_t pozycja_oczy_y;
-uint8_t pozycja_glowa_x;
-uint8_t pozycja_glowa_y1;
-uint8_t pozycja_glowa_y2;
-//tworzenie obiektow serwomechanizmow
+uint8_t pozycja_aktualna[5];
+
 Servo glowa_x;
 Servo glowa_y1;
 Servo glowa_y2;
@@ -46,50 +38,39 @@ void wypisz_pozycje(void){
 
 void setup() {
   Serial.begin(9600);
-  //przypisanie pinow do serwo
   glowa_x.attach(pin_glowa_x);
   glowa_y1.attach(pin_glowa_y1);
   glowa_y2.attach(pin_glowa_y2);
   oczy_x.attach(pin_oczy_x);
   oczy_y.attach(pin_oczy_y);
-  //przypisanie pozycji bazowych, trzeba jescze sie nad tym zastanowic
   glowa_x.write(103);
   glowa_y1.write(95);
   glowa_y2.write(95);
   oczy_x.write(90);
   oczy_y.write(90);
-  //wysalnie wiadomosci ze arduino gotowe do przyjecia danych
   Serial.println("START");
 }
 
 void loop() {
-  
-  // Sprawdzamy, czy są dostępne dane
   if (Serial.available() >= 5) {
-    // Odczytaj 5 bajtow danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
     Serial.readBytes(pozycja_docelowa, 5);
-    // ustawienie pozycji serw
     bool ruch=true;
     while(ruch){
       ruch=false;
-        for(int i=0;i<5;i++){
-          if(pozycja_aktualna[i]<pozycja_docelowa[i]){
-            pozycja_aktualna[i]++;
-            ruch=true;
-          }else if(pozycja_aktualna[i]>pozycja_docelowa[i]){
-            pozycja_aktualna[i]--;
-            ruch=true;
-          }
+      for(int i=0;i<5;i++){
+        if(pozycja_aktualna[i]<pozycja_docelowa[i]){
+          pozycja_aktualna[i]++;
+          ruch=true;
+        }else if(pozycja_aktualna[i]>pozycja_docelowa[i]){
+          pozycja_aktualna[i]--;
+          ruch=true;
         }
-        ustaw_serwa();
-        delay(30);
+      }
+      ustaw_serwa();
+      delay(30);
     }
-    // ten fragment jest po to aby sprawdzic czy dane zostaly przeslane prawidlowo
     wypisz_pozycje();
-    // Wysłanie potwierdzenia do Python
     Serial.println("OK");
-    
-    // Wysyłanie informacji o gotowości do odbioru kolejnych danych  // Opcjonalne opóźnienie dla stabilności
     Serial.println("START");
   }
 }

@@ -25,31 +25,49 @@ def potwierdzenie(rduino, oczekiwana_wiadomosc):
         time.sleep(0.01) #podobno pomoze uniknac niepotrzebnego obciazenia CPU
 
 #funkcja ktora zajmuje sie przeslaniem danych do arduino
-def komunikacja_arduino(arduino, glowa_x, glowa_y, oczy_x, oczy_y, wiad_start, wiad_potwierdzajaca):
+def komunikacja_arduino(arduino, glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y, wiad_start, wiad_potwierdzajaca):
     potwierdzenie(arduino, wiad_start) #oczekiwanie na gotowosc arduino
-    dane=[glowa_x, glowa_y, oczy_x, oczy_y]
+    dane=[glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y]
     arduino.write(bytearray(dane)) #przeslanie ciagu bajtow , 1 bajt to jedna pozycja serwa poniewa zawieraja sie one w zakresie od 0 do 255
     potwierdzenie(arduino, wiad_potwierdzajaca) #oczekiwanie na potwierdzenie odbioru danych
 
 #wyznaczanie pozycji serwa ktore steruje oczami
 def ruch_oczu(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik,minimumm, maximum):
     proporcja=(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
-    pozycja=minimumm+(proporcja*(180-minimumm-maximum))
-    return int(wspolczynnik*pozycja)
+    pozycja=minimumm+(proporcja*(maximum-minimumm)*wspolczynnik)
+    return int(pozycja)
+
+#ruch w oczu w przeciwną strone
+def ruch_oczu_dwa(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik,minimumm, maximum):
+    proporcja=1-(wspolrzedna_twarzy+(wymiar_twarzy/2))/wymiar_kamery
+    pozycja=minimumm+(proporcja*(maximum-minimumm)*wspolczynnik)
+    return int(pozycja)
 
  #wyznaczanie pozycji serwa ktore steruje glowa, jest ona bardziej skomplikowana bo musi wyznaczyc najpierw o ile ma sie przesunac serwo wzgledem poprzedniej pozycji
-def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja):
-    odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowec(analogicznie gora-dol)
+def ruch_glowy(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja, maximum_przemieszczenie):
+    odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowce(analogicznie gora-dol)
     proporcja=odlegosc_od_srodka/(wymiar_kamery/2) #proporcja odleglosc glowy od srodka do wymiaru polowy kamery
-    przesuniecie=wspolczynnik*proporcja*90 #wyznaczanie o ile ma sie zmienic pozycja serwa
+    przesuniecie=proporcja*maximum_przemieszczenie #wyznaczanie o ile ma sie zmienic pozycja serwa
     if(poprzednia_pozycja+przesuniecie)<minimum_pozycja: #jesli serwo juz sie nie bedzie moglo bardziej przesunac to ustawiamy skrajna wartosc
         return minimum_pozycja
     elif (poprzednia_pozycja+przesuniecie)>maximum_pozycja: #analogia tylko w druga strone
         return maximum_pozycja
     else:
-        return int(poprzednia_pozycja+przesuniecie) #jesli wszystko git to pozycja serwa to poprzednia pozycja plus zmiana
+        return int(wspolczynnik*(poprzednia_pozycja+przesuniecie)) #jesli wszystko git to pozycja serwa to poprzednia pozycja plus zmiana
 
 #funkcja pomocnicza wyznaczajaca stosunek srodka twarzy do calej dlugosci obrazu
+
+def ruch_glowy_dwa(wymiar_twarzy, wymiar_kamery, wspolrzedna_twarzy, wspolczynnik, poprzednia_pozycja, minimum_pozycja, maximum_pozycja, maximum_przemieszczenie):
+    odlegosc_od_srodka=wymiar_kamery/2-(wspolrzedna_twarzy+(wymiar_twarzy/2)) #odleglosc glowy od srodka, ujemna to glowa w prawej polowce, dodatnia to glowa w lewej polowce(analogicznie gora-dol)
+    proporcja=-(odlegosc_od_srodka/(wymiar_kamery/2)) #proporcja odleglosc glowy od srodka do wymiaru polowy kamery
+    przesuniecie=proporcja*maximum_przemieszczenie #wyznaczanie o ile ma sie zmienic pozycja serwa
+    if(poprzednia_pozycja+przesuniecie)<minimum_pozycja: #jesli serwo juz sie nie bedzie moglo bardziej przesunac to ustawiamy skrajna wartosc
+        return minimum_pozycja
+    elif (poprzednia_pozycja+przesuniecie)>maximum_pozycja: #analogia tylko w druga strone
+        return maximum_pozycja
+    else:
+        return int(wspolczynnik*(poprzednia_pozycja+przesuniecie)) #jesli wszystko git to pozycja serwa to poprzednia pozycja plus zmiana
+
 def proporcja_x(x, sz_kamery, sz_glowy):
     srodek_glowy_x = x + (sz_glowy / 2)
     prop_x = srodek_glowy_x / sz_kamery
@@ -61,25 +79,26 @@ def proporcja_y(y, w_kamery, w_glowy):
     prop_y = srodek_glowy_y / w_kamery
     return prop_y
 
-    #sprawdzanie czy twarz znajduje sie w konkretnych polach siatki
+
 def sprawdz_sektor(x, sz_kamery, sz_glowy, y, wys_kamery, wys_glowy):
-    prop_x=proporcja_x(x, sz_kamery, sz_glowy)
-    prop_y=proporcja_y(y, wys_kamery, wys_glowy)
-    if(0.2 < prop_x < 0.8 and 0.2 < prop_y < 0.8):
+    prop_x = proporcja_x(x, sz_kamery, sz_glowy)
+    prop_y = proporcja_y(y, wys_kamery, wys_glowy)
+
+    if 0.35 < prop_x < 0.65 and 0.35 < prop_y < 0.65:
         return Sektor.SS
-    if(0.2 < prop_x < 0.8 and prop_y > 0.8):
+    if (0.3 < prop_x < 0.7) and prop_y > 0.7:
         return Sektor.SG
-    if(0.2 < prop_x < 0.8 and prop_y < 0.2):
+    if (0.3 < prop_x < 0.7) and prop_y < 0.3:
         return Sektor.SD
-    if(prop_x < 0.2 and 0.2 < prop_y < 0.8):
+    if prop_x < 0.3 and (0.3 < prop_y < 0.7):
         return Sektor.LS
-    if(prop_x < 0.2 and prop_y > 0.8):
+    if prop_x < 0.3 and prop_y > 0.7:
         return Sektor.LG
-    if(prop_x < 0.2 and prop_y < 0.2):
+    if prop_x < 0.3 and prop_y < 0.3:
         return Sektor.LD
-    if(prop_x > 0.8 and 0.2 < prop_y < 0.8):
+    if prop_x > 0.7 and (0.3 < prop_y < 0.7):
         return Sektor.PS
-    if(prop_x > 0.8 and prop_y > 0.8):
+    if prop_x > 0.7 and prop_y > 0.7:
         return Sektor.PG
-    if(prop_x > 0.8 and prop_y < 0.2):
+    if prop_x > 0.7 and prop_y < 0.3:
         return Sektor.PD

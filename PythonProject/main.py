@@ -2,7 +2,7 @@ import cv2
 import serial
 import time
 import funkcje
-from funkcje import ruch_oczu, ruch_glowy, komunikacja_arduino, Sektor, ruch_glowy_dwa
+from funkcje import ruch_oczu, ruch_glowy, komunikacja_arduino, Sektor, ruch_glowy_dwa, rozrusznik
 
 port='COM5' #tutaj nalezy wpisac port do ktorego podlaczone jest arduino
 oczy_kat_lp=0
@@ -50,7 +50,7 @@ arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunik
 time.sleep(2)  # zeby sie polaczenie ustabilizowalo
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') # Zaladowanie klasyfikatora, model do wykrywania twarzy
 nagranie = cv2.VideoCapture(1)
-
+rozrusznik(arduino, wiadomosc_startowa, "READY")
 if not nagranie.isOpened():
     print("nie udalo sie otworzyc kamery")
     exit()

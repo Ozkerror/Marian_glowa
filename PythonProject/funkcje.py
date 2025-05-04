@@ -102,3 +102,15 @@ def sprawdz_sektor(x, sz_kamery, sz_glowy, y, wys_kamery, wys_glowy):
         return Sektor.PG
     if prop_x > 0.7 and prop_y < 0.3:
         return Sektor.PD
+
+def rozrusznik(arduino, wiad_start, wiad_potwierdzajaca):
+    potwierdzenie(arduino, wiad_start)
+    arduino.write(b"GO\n")
+    while True:
+        if arduino.in_waiting > 0:
+            linia = arduino.readline().decode().strip()
+            print(f"Odebrano: {linia}")
+            if linia == wiad_potwierdzajaca:
+                break
+
+

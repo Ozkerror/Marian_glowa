@@ -23,6 +23,26 @@ Servo glowa_y2;
 Servo oczy_x;
 Servo oczy_y;
 
+void czekaj_na_go(void){
+  String dane="";
+  while(true){
+    if(Serial.available()>0){
+      char znak = Serial.read();
+      if(znak == '\r' || znak == '\n'){
+        dane.trim();
+        if(dane=="GO"){
+          Serial.println("READY");
+          break;
+        }else{
+          dane="";
+        }
+      }else{
+        dane+=znak;
+      }
+    }
+  }
+}
+
 void ustaw_serwa(void){
   glowa_x.write(pozycja_aktualna[0]);
   glowa_y1.write(pozycja_aktualna[1]);
@@ -60,6 +80,8 @@ void setup() {
   oczy_y.write(90);
   //wysalnie wiadomosci ze arduino gotowe do przyjecia danych
   Serial.println("START");
+  czekaj_na_go();
+  Serial.println("START");
 }
 
 void loop() {
@@ -80,8 +102,8 @@ void loop() {
             ruch=true;
           }
         }
-        ustaw_serwa();
-        delay(30);
+      ustaw_serwa();
+      delay(30);
     }
     // ten fragment jest po to aby sprawdzic czy dane zostaly przeslane prawidlowo
     wypisz_pozycje();

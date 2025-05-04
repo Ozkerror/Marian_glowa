@@ -1,5 +1,14 @@
 glowa1_y  (57 max w gore, 95 max w dol)
 glowa2_y (46 max w dol, 95 max w gore)
 glowa_x (neutral 95, 33 max_lewo, 140 max_prawo)
-oczy_x (neutral 90, 45 max_lewo, 135 max prawo)
-oczy_y (neutral 90, 135 max_gora, 45 max_dol)
+oczy_x (neutral 98,  max_lewo, 125 max prawo)
+oczy_y (neutral 140, 120 max_gora,  160 max_dol)
+
+
+WYZNACZONE DOSWIADCZALNIE
+SERWO	BAZA	ROZNICA
+GX	103	55
+GY1	min=85	max=110		czym wartość wyzsza tym glowa nizej
+GY2	min=70	max=105		czym wartość wyzsza tym glowa wyżej
+OX
+OY

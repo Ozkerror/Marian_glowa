@@ -8,14 +8,15 @@
 
 #include <Servo.h>
 //tablica ktora bedzie przechowywac pozcyje serwo
-uint8_t pozycja_docelowa[5];
-uint8_t pozycja_aktualna[5]; 
+uint8_t pozycja_docelowa[5]={103, 95, 95, 90, 90} ;
+uint8_t pozycja_aktualna[5]={103, 95, 95, 90, 90}; 
 //zmienne pomocnicze
 uint8_t pozycja_oczy_x;
 uint8_t pozycja_oczy_y;
 uint8_t pozycja_glowa_x;
 uint8_t pozycja_glowa_y1;
 uint8_t pozycja_glowa_y2;
+uint8_t A=0;
 //tworzenie obiektow serwomechanizmow
 Servo glowa_x;
 Servo glowa_y1;
@@ -87,6 +88,7 @@ void loop() {
   
   // Sprawdzamy, czy są dostępne dane
   if (Serial.available() >= 5) {
+
     // Odczytaj 5 bajtow danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
     Serial.readBytes(pozycja_docelowa, 5);
     // ustawienie pozycji serw

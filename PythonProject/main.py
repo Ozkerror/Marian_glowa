@@ -45,7 +45,7 @@ maximum_y_oczu=135
 wiadomosc_startowa="START"
 wiadomosc_potwierdzajaca="OK"
 arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunikowac
-
+A=0
 time.sleep(2)  # zeby sie polaczenie ustabilizowalo
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') # Zaladowanie klasyfikatora, model do wykrywania twarzy
 nagranie = cv2.VideoCapture(0)
@@ -87,10 +87,10 @@ while True:
         else:
             czas_obecny=time.perf_counter()
             #jesli odliczonny czas wiekszy od 3 sekund to ustaw glowe w odpowiedniej pozycji
-            if(czas_obecny-czas_poprzedni)>3:
+            if(czas_obecny-czas_poprzedni)>0.2:
                 pozycja_x_glowy = ruch_glowy_dwa(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, pozycja_x_glowy, minimum_x_glowy, maximum_x_glowy, 15)
-                pozycja_y_glowy1 = ruch_glowy(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy1, minimum_y_glowy, maximum_y_glowy, 8)
-                pozycja_y_glowy2 = ruch_glowy_dwa(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy2, minimum_y_glowy, maximum_y_glowy, 8)
+                pozycja_y_glowy1 = ruch_glowy_dwa(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy1, minimum_y_glowy, maximum_y_glowy, 8)
+                pozycja_y_glowy2 = ruch_glowy(wys_twarzy, wys_kamery, y, g_wspolczynnik_y, pozycja_y_glowy2, minimum_y_glowy, maximum_y_glowy, 8)
                 #zresetuj odliczanie
                 czas_poprzedni=time.perf_counter()
                 #jesli glowa w skrajnych pozycjach to wtedy ruszamy normalnie oczami
@@ -108,7 +108,7 @@ while True:
                 pozycja_x_oczu = ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, minimum_x_oczu, maximum_x_oczu)
                 pozycja_y_oczu = ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
         #wyslij dane do arduino
-        komunikacja_arduino(arduino, pozycja_x_glowy, pozycja_y_glowy1, pozycja_y_glowy2, pozycja_x_oczu, pozycja_y_oczu, wiadomosc_potwierdzajaca)
+            komunikacja_arduino(arduino, pozycja_x_glowy, pozycja_y_glowy1, pozycja_y_glowy2, pozycja_x_oczu, pozycja_y_oczu, wiadomosc_potwierdzajaca)
     cv2.imshow("nagrywanie", klatka)  # wyswietla klatke w okienku nagrywanie
     if cv2.waitKey(1) & 0xFF == ord('q'):  # pozwolenie uzytkownikowi na zakonczenie dzialania programu poprzez nacisniecie klawisza 'q'
         break

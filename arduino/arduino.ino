@@ -81,10 +81,10 @@ void setup() {
   //wysalnie wiadomosci ze arduino gotowe do przyjecia danych
   Serial.println("START");
   czekaj_na_go();
-  Serial.println("START");
 }
 
 void loop() {
+  
   // Sprawdzamy, czy są dostępne dane
   if (Serial.available() >= 5) {
     // Odczytaj 5 bajtow danych, dziala poniewaz przesylamy dane ktore nie przekraczaja 255
@@ -109,9 +109,8 @@ void loop() {
     wypisz_pozycje();
     // Wysłanie potwierdzenia do Python
     Serial.println("OK");
-    
     // Wysyłanie informacji o gotowości do odbioru kolejnych danych
     delay(50);  // Opcjonalne opóźnienie dla stabilności
-    Serial.println("START");
+    
   }
 }

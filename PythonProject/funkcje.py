@@ -25,8 +25,7 @@ def potwierdzenie(rduino, oczekiwana_wiadomosc):
         time.sleep(0.01) #podobno pomoze uniknac niepotrzebnego obciazenia CPU
 
 #funkcja ktora zajmuje sie przeslaniem danych do arduino
-def komunikacja_arduino(arduino, glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y, wiad_start, wiad_potwierdzajaca):
-    potwierdzenie(arduino, wiad_start) #oczekiwanie na gotowosc arduino
+def komunikacja_arduino(arduino, glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y, wiad_potwierdzajaca):
     dane=[glowa_x, glowa_y1, glowa_y2, oczy_x, oczy_y]
     arduino.write(bytearray(dane)) #przeslanie ciagu bajtow , 1 bajt to jedna pozycja serwa poniewa zawieraja sie one w zakresie od 0 do 255
     potwierdzenie(arduino, wiad_potwierdzajaca) #oczekiwanie na potwierdzenie odbioru danych

@@ -4,12 +4,11 @@ import time
 import funkcje
 from funkcje import ruch_oczu, ruch_glowy, komunikacja_arduino, Sektor, ruch_glowy_dwa, rozrusznik
 
-port='COM5' #tutaj nalezy wpisac port do ktorego podlaczone jest arduino
+port='COM7' #tutaj nalezy wpisac port do ktorego podlaczone jest arduino
 oczy_kat_lp=0
 oczy_kat_gd=0
 glowa_kat_lp=0
 glowa_kat_gd=0
-
 sektor = 0
 
 czas_wyjscia_z_sektora = None
@@ -49,7 +48,7 @@ arduino = serial.Serial(port, 9600) #tworzy obiekt z ktorym bedziemy sie komunik
 
 time.sleep(2)  # zeby sie polaczenie ustabilizowalo
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml') # Zaladowanie klasyfikatora, model do wykrywania twarzy
-nagranie = cv2.VideoCapture(1)
+nagranie = cv2.VideoCapture(0)
 rozrusznik(arduino, wiadomosc_startowa, "READY")
 if not nagranie.isOpened():
     print("nie udalo sie otworzyc kamery")
@@ -109,7 +108,7 @@ while True:
                 pozycja_x_oczu = ruch_oczu(sz_twarzy, sz_kamery, x, o_wspolczynnik_x, minimum_x_oczu, maximum_x_oczu)
                 pozycja_y_oczu = ruch_oczu(wys_twarzy, wys_kamery, y, o_wspolczynnik_y, minimum_y_oczu, maximum_y_oczu)
         #wyslij dane do arduino
-        komunikacja_arduino(arduino, pozycja_x_glowy, pozycja_y_glowy1, pozycja_y_glowy2, pozycja_x_oczu, pozycja_y_oczu, wiadomosc_startowa, wiadomosc_potwierdzajaca)
+        komunikacja_arduino(arduino, pozycja_x_glowy, pozycja_y_glowy1, pozycja_y_glowy2, pozycja_x_oczu, pozycja_y_oczu, wiadomosc_potwierdzajaca)
     cv2.imshow("nagrywanie", klatka)  # wyswietla klatke w okienku nagrywanie
     if cv2.waitKey(1) & 0xFF == ord('q'):  # pozwolenie uzytkownikowi na zakonczenie dzialania programu poprzez nacisniecie klawisza 'q'
         break
